@@ -30,13 +30,6 @@
 - [README_WEB.md](README_WEB.md)：只开发 Web 版，适合前端页面、Flask API、前后端联调
 - [README_DESKTOP.md](README_DESKTOP.md)：只开发桌面版，适合 Electron、桌面运行时、Windows 打包
 
-## 开源协作文档
-
-如果你准备把这个仓库公开，建议先一起阅读这些文件：
-
-- `CONTRIBUTING.md`：贡献方式、提交流程、验证要求
-- `SECURITY.md`：漏洞报告方式、敏感数据处理、开源前安全检查
-- `backend/.env.example`：配置项样例，避免提交真实密钥
 
 ## Web 版和桌面版的关系
 
