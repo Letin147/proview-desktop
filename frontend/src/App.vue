@@ -170,30 +170,30 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex h-screen w-full overflow-hidden bg-slate-50 font-sans text-slate-900 transition-colors duration-500 dark:bg-[#05050A] dark:text-slate-300">
+  <div class="app-shell flex h-screen w-full overflow-hidden font-sans text-slate-900 transition-colors duration-500 dark:text-slate-300">
 
     <!-- ================== PC端：左侧边栏 ================== -->
     <aside
       v-if="!isGuestPage"
-      class="z-20 hidden min-h-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white/90 transition-[width] duration-300 md:flex dark:border-white/5 dark:bg-[#0A0A0F]/95"
-      :class="isSidebarCollapsed ? 'w-24' : 'w-64'"
+      class="app-sidebar z-20 hidden min-h-0 flex-col overflow-hidden transition-[width] duration-300 md:flex"
+      :class="isSidebarCollapsed ? 'w-[92px]' : 'w-[280px]'"
     >
       <!-- Logo -->
-      <div class="flex h-20 shrink-0 items-center border-b border-slate-100 dark:border-white/5" :class="isSidebarCollapsed ? 'px-3' : 'px-6'">
+      <div class="app-sidebar__header flex h-20 shrink-0 items-center" :class="isSidebarCollapsed ? 'px-3' : 'px-6'">
         <div class="flex min-w-0 flex-1 items-center" :class="isSidebarCollapsed ? 'justify-center' : 'gap-3'">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30 dark:shadow-indigo-900/40">
+          <div class="app-logo-mark flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-white">
             <Bot class="w-5 h-5" />
           </div>
           <span
             v-if="!isSidebarCollapsed"
-            class="truncate text-xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700 dark:from-white dark:to-indigo-200"
+            class="app-logo-text truncate text-xl font-extrabold tracking-wide"
           >
             ProView AI
           </span>
         </div>
         <button
           type="button"
-          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-slate-600 transition hover:border-slate-300 hover:bg-white hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-indigo-300"
+          class="app-icon-control inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
           :title="isSidebarCollapsed ? '展开导航栏' : '折叠导航栏'"
           @click="toggleSidebar"
         >
@@ -207,7 +207,7 @@ onBeforeUnmount(() => {
           <button
             type="button"
             @click="handleThemeToggle"
-            class="flex w-full items-center rounded-2xl border border-slate-200/80 bg-slate-50/80 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-white hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-indigo-300"
+            class="app-sidebar-pill flex w-full items-center py-3 text-sm font-semibold"
             :class="isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4'"
             :title="theme.isDark ? '切换到浅色模式' : '切换到深色模式'"
           >
@@ -218,19 +218,19 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- 导航菜单 -->
-        <nav class="mt-4 flex flex-col gap-2 px-4 pb-4">
-          <div v-if="!isSidebarCollapsed" class="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-slate-400">面试流程</div>
+        <nav class="mt-5 flex flex-col gap-2 px-4 pb-4">
+          <div v-if="!isSidebarCollapsed" class="app-nav-group-title mb-2 px-2">面试流程</div>
           <button
             v-for="item in navItems.filter(i => i.group === '面试流程')" :key="item.name"
             @click="navigateTo(item)"
-            class="group flex items-center rounded-xl py-3 text-sm font-bold transition-all"
+            class="app-nav-button group flex items-center py-3 text-sm font-bold"
             :class="[
               isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4',
               getNavItemClass(
                 item,
-                'bg-indigo-600 text-white shadow-md dark:bg-primary dark:shadow-[0_0_15px_rgba(79,70,229,0.3)]',
-                'text-slate-600 hover:bg-slate-100 hover:text-indigo-600 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-indigo-300',
-                'text-slate-300 dark:text-slate-600 cursor-not-allowed'
+                'app-nav-button--active',
+                'app-nav-button--idle',
+                'app-nav-button--disabled'
               )
             ]"
             :disabled="item.disabled"
@@ -239,17 +239,21 @@ onBeforeUnmount(() => {
             <component :is="item.icon" class="w-5 h-5 transition-transform group-hover:scale-110" />
             <span v-if="!isSidebarCollapsed">{{ item.label }}</span>
           </button>
-          <div v-if="!isSidebarCollapsed" class="mt-4 mb-2 px-2 text-xs font-bold uppercase tracking-wider text-slate-400">工具箱</div>
+          <div v-if="!isSidebarCollapsed" class="app-nav-group-title mt-4 mb-2 px-2">工具箱</div>
           <button
             v-for="item in navItems.filter(i => i.group === '工具箱')" :key="item.name"
             @click="navigateTo(item)"
-            class="group flex items-center rounded-xl py-3 text-sm font-bold transition-all"
+            class="app-nav-button group flex items-center py-3 text-sm font-bold"
             :class="[
               isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4',
-              currentNav === item.name
-                ? 'bg-indigo-600 text-white shadow-md dark:bg-primary dark:shadow-[0_0_15px_rgba(79,70,229,0.3)]'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-indigo-600 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-indigo-300'
+              getNavItemClass(
+                item,
+                'app-nav-button--active',
+                'app-nav-button--idle',
+                'app-nav-button--disabled'
+              )
             ]"
+            :disabled="item.disabled"
             :title="isSidebarCollapsed ? item.label : undefined"
           >
             <component :is="item.icon" class="w-5 h-5 transition-transform group-hover:scale-110" />
@@ -259,10 +263,10 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- 底部控制 -->
-      <div class="shrink-0 space-y-2 border-t border-slate-100 p-4 dark:border-white/5">
+      <div class="app-sidebar__footer shrink-0 space-y-2 p-4">
         <button
           @click="goLanding"
-          class="flex w-full items-center rounded-xl py-3 text-sm font-semibold text-slate-600 transition-all hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-indigo-300"
+          class="app-sidebar-pill flex w-full items-center py-3 text-sm font-semibold"
           :class="isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4'"
           :title="isSidebarCollapsed ? '返回介绍页' : undefined"
         >
@@ -271,16 +275,16 @@ onBeforeUnmount(() => {
         </button>
         <button
           @click="openSettings"
-          class="flex w-full items-center rounded-xl py-3 text-sm font-semibold text-slate-600 transition-all hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-indigo-300"
+          class="app-sidebar-pill flex w-full items-center py-3 text-sm font-semibold"
           :class="isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4'"
           :title="isSidebarCollapsed ? '应用设置' : undefined"
         >
           <Settings class="w-5 h-5" />
           <span v-if="!isSidebarCollapsed">应用设置</span>
         </button>
-        <div class="rounded-2xl border border-slate-200/80 bg-slate-50/80 py-3 dark:border-white/5 dark:bg-white/5" :class="isSidebarCollapsed ? 'px-3' : 'px-4'">
+        <div class="app-user-card rounded-[24px] py-3" :class="isSidebarCollapsed ? 'px-3' : 'px-4'">
           <div class="flex items-center" :class="isSidebarCollapsed ? 'justify-center' : 'gap-3'">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20">
               <Bot class="h-4 w-4" />
             </div>
             <div v-if="!isSidebarCollapsed" class="min-w-0">
@@ -293,24 +297,24 @@ onBeforeUnmount(() => {
     </aside>
 
     <!-- ================== 移动端：底部 Tab ================== -->
-    <nav v-if="!isGuestPage" class="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white/95 pb-2 pt-2 md:hidden dark:border-white/10 dark:bg-[#0A0A0F]/95">
+    <nav v-if="!isGuestPage" class="app-mobile-nav fixed bottom-0 left-0 right-0 z-50 pb-2 pt-2 md:hidden">
       <div class="flex justify-around">
         <button
           v-for="item in navItems" :key="item.name"
           @click="navigateTo(item)"
-          class="flex flex-col items-center p-2 transition-colors"
+          class="app-mobile-tab flex flex-col items-center p-2"
           :class="getNavItemClass(
             item,
-            'text-primary dark:text-indigo-400',
-            'text-slate-500 dark:text-slate-400',
-            'text-slate-300 dark:text-slate-600'
+            'app-mobile-tab--active',
+            'app-mobile-tab--idle',
+            'app-mobile-tab--disabled'
           )"
           :disabled="item.disabled"
         >
           <component :is="item.icon" class="mb-1 w-5 h-5" />
           <span class="text-[10px] font-bold">{{ item.label }}</span>
         </button>
-        <button @click="goLanding" class="flex flex-col items-center p-2 text-slate-500 transition-colors dark:text-slate-400">
+        <button @click="goLanding" class="app-mobile-tab app-mobile-tab--idle flex flex-col items-center p-2">
           <ArrowLeft class="mb-1 w-5 h-5" />
           <span class="text-[10px] font-bold">介绍页</span>
         </button>
@@ -318,13 +322,13 @@ onBeforeUnmount(() => {
     </nav>
 
     <!-- ================== 右侧主内容区 ================== -->
-    <main class="custom-scroll relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-20 md:pb-0">
+    <main class="app-main custom-scroll relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-20 md:pb-0">
       <BlobBackground />
       <div class="relative z-10 min-h-full">
         <div v-if="!isGuestPage" class="pointer-events-none absolute left-4 top-4 z-20 md:hidden">
           <button
             type="button"
-            class="pointer-events-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-300 hover:bg-white dark:border-white/10 dark:bg-slate-950/85 dark:text-slate-200 dark:hover:bg-slate-900"
+            class="app-top-icon pointer-events-auto inline-flex h-11 w-11 items-center justify-center rounded-full"
             :title="theme.isDark ? '切换到浅色模式' : '切换到深色模式'"
             @click="handleThemeToggle"
           >
@@ -333,14 +337,14 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <div v-if="!isGuestPage" class="pointer-events-none absolute right-4 top-4 z-20 flex items-center gap-3">
-          <div class="pointer-events-auto hidden items-center gap-3 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur md:flex dark:border-white/10 dark:bg-slate-950/85 dark:text-slate-200">
+          <div class="app-top-chip pointer-events-auto hidden items-center gap-3 rounded-full px-4 py-2 text-sm md:flex">
             <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
             <span class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">单机模式</span>
             <span class="max-w-[180px] truncate font-semibold">{{ auth.user?.display_name || auth.user?.username || '本地用户' }}</span>
           </div>
           <button
             type="button"
-            class="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-white dark:border-white/10 dark:bg-slate-950/85 dark:text-slate-200 dark:hover:bg-slate-900"
+            class="app-top-chip pointer-events-auto inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
             @click="openSettings"
           >
             <Settings class="h-4 w-4" />
@@ -378,5 +382,317 @@ onBeforeUnmount(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.app-shell {
+  background:
+    radial-gradient(920px circle at -10% -12%, rgba(251, 191, 36, 0.14), transparent 46%),
+    radial-gradient(860px circle at 108% 4%, rgba(56, 189, 248, 0.12), transparent 48%),
+    linear-gradient(135deg, rgba(255, 248, 238, 0.72) 0%, rgba(255, 255, 255, 0.54) 46%, rgba(239, 247, 255, 0.6) 100%);
+}
+
+.app-sidebar {
+  position: relative;
+  border-right: 1px solid rgba(226, 232, 240, 0.75);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.9) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    0 18px 48px rgba(15, 23, 42, 0.08),
+    inset -1px 0 0 rgba(255, 255, 255, 0.6);
+}
+
+.app-sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(251, 191, 36, 0.08), transparent 34%),
+    radial-gradient(110% 100% at 100% 18%, rgba(99, 102, 241, 0.08), transparent 36%),
+    radial-gradient(120% 100% at 50% 100%, rgba(244, 114, 182, 0.06), transparent 28%);
+}
+
+.app-sidebar__header {
+  position: relative;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.68);
+}
+
+.app-sidebar__header::after {
+  content: '';
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: -1px;
+  height: 1px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.15), rgba(99, 102, 241, 0.18), rgba(244, 114, 182, 0.12));
+}
+
+.app-logo-mark {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 55%, #ec4899 100%);
+  box-shadow:
+    0 14px 30px rgba(79, 70, 229, 0.2),
+    0 8px 18px rgba(59, 130, 246, 0.16);
+}
+
+.app-logo-text {
+  color: transparent;
+  background-image: linear-gradient(90deg, #1d4ed8 0%, #4f46e5 52%, #be185d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.app-icon-control,
+.app-sidebar-pill,
+.app-top-chip,
+.app-top-icon {
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  background: rgba(255, 255, 255, 0.82);
+  color: #475569;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+.app-icon-control:hover,
+.app-sidebar-pill:hover,
+.app-top-chip:hover,
+.app-top-icon:hover {
+  transform: translateY(-1px);
+  border-color: rgba(129, 140, 248, 0.42);
+  color: #4f46e5;
+  box-shadow: 0 14px 30px rgba(79, 70, 229, 0.12);
+}
+
+.app-nav-group-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.app-nav-button {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  text-align: left;
+  transition:
+    transform 220ms ease,
+    color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.app-nav-button--idle {
+  color: #64748b;
+}
+
+.app-nav-button--idle:hover {
+  transform: translateY(-1px);
+  color: #334155;
+  background:
+    linear-gradient(90deg, rgba(240, 249, 255, 0.42) 0%, rgba(245, 243, 255, 0.36) 100%);
+}
+
+.app-nav-button--idle::before {
+  content: '';
+  position: absolute;
+  left: 0.4rem;
+  top: 50%;
+  width: 2px;
+  height: 0;
+  border-radius: 9999px;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, #38bdf8, #818cf8, #f472b6);
+  opacity: 0;
+  transition: height 220ms ease, opacity 220ms ease;
+}
+
+.app-nav-button--idle:hover::before {
+  height: 60%;
+  opacity: 0.7;
+}
+
+.app-nav-button--active {
+  color: #1e3a8a;
+  background:
+    linear-gradient(135deg, rgba(224, 242, 254, 0.72) 0%, rgba(238, 242, 255, 0.78) 52%, rgba(252, 231, 243, 0.66) 100%);
+  box-shadow:
+    0 12px 28px rgba(79, 70, 229, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.app-nav-button--active::before {
+  content: '';
+  position: absolute;
+  left: 0.35rem;
+  top: 50%;
+  width: 3px;
+  height: 74%;
+  border-radius: 9999px;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, #38bdf8, #818cf8, #f472b6);
+  box-shadow: 0 0 14px rgba(129, 140, 248, 0.35);
+}
+
+.app-nav-button--disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.app-nav-button--disabled:hover {
+  transform: none;
+  color: #cbd5e1;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-sidebar__footer {
+  position: relative;
+  border-top: 1px solid rgba(226, 232, 240, 0.68);
+}
+
+.app-user-card {
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(248, 250, 252, 0.92) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.app-mobile-nav {
+  border-top: 1px solid rgba(226, 232, 240, 0.82);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.app-mobile-tab {
+  position: relative;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.app-mobile-tab--active {
+  color: #4f46e5;
+}
+
+.app-mobile-tab--active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 24px;
+  height: 3px;
+  border-radius: 9999px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #f472b6);
+}
+
+.app-mobile-tab--idle {
+  color: #64748b;
+}
+
+.app-mobile-tab--idle:hover {
+  color: #334155;
+  transform: translateY(-1px);
+}
+
+.app-mobile-tab--disabled {
+  color: #cbd5e1;
+}
+
+.app-main {
+  background: transparent;
+}
+
+:global(html.dark) .app-shell {
+  background:
+    radial-gradient(920px circle at -10% -12%, rgba(56, 189, 248, 0.14), transparent 44%),
+    radial-gradient(840px circle at 108% 4%, rgba(129, 140, 248, 0.14), transparent 46%),
+    linear-gradient(160deg, rgba(5, 6, 13, 0.96) 0%, rgba(11, 16, 32, 0.95) 52%, rgba(7, 11, 22, 0.96) 100%);
+}
+
+:global(html.dark) .app-sidebar {
+  border-right-color: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(10, 10, 15, 0.92) 0%, rgba(12, 15, 23, 0.94) 100%);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.38),
+    inset -1px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+:global(html.dark) .app-sidebar__header,
+:global(html.dark) .app-sidebar__footer {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:global(html.dark) .app-logo-text {
+  background-image: linear-gradient(90deg, #ffffff 0%, #c4b5fd 46%, #7dd3fc 100%);
+}
+
+:global(html.dark) .app-icon-control,
+:global(html.dark) .app-sidebar-pill,
+:global(html.dark) .app-top-chip,
+:global(html.dark) .app-top-icon,
+:global(html.dark) .app-user-card {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+}
+
+:global(html.dark) .app-icon-control:hover,
+:global(html.dark) .app-sidebar-pill:hover,
+:global(html.dark) .app-top-chip:hover,
+:global(html.dark) .app-top-icon:hover {
+  border-color: rgba(129, 140, 248, 0.4);
+  color: #c4b5fd;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+}
+
+:global(html.dark) .app-nav-group-title {
+  color: #64748b;
+}
+
+:global(html.dark) .app-nav-button--idle {
+  color: #94a3b8;
+}
+
+:global(html.dark) .app-nav-button--idle:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:global(html.dark) .app-nav-button--active {
+  color: #c4b5fd;
+  background:
+    linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(67, 56, 202, 0.34) 52%, rgba(131, 24, 67, 0.28) 100%);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+}
+
+:global(html.dark) .app-nav-button--disabled {
+  color: #475569;
+}
+
+:global(html.dark) .app-mobile-nav {
+  border-top-color: rgba(255, 255, 255, 0.08);
+  background: rgba(10, 10, 15, 0.9);
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.3);
+}
+
+:global(html.dark) .app-mobile-tab--idle {
+  color: #94a3b8;
+}
+
+:global(html.dark) .app-mobile-tab--idle:hover {
+  color: #e2e8f0;
 }
 </style>

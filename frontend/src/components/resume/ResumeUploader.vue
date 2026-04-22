@@ -34,6 +34,7 @@ const isQuestionnaireOpen = ref(true)
 
 const existingResumeName = ref('')
 const existingOcrText = ref('')
+const existingResumeSessionId = ref('')
 const reportContextLabel = ref('')
 const loadingExisting = ref(true)
 const mode = ref<'existing' | 'upload'>('existing')
@@ -57,6 +58,35 @@ function buildReportContext(detail: SessionDetail): ResumeReportContext | null {
   }
 }
 
+function applyReportContext(detail: SessionDetail) {
+  const context = buildReportContext(detail)
+  if (!context) return false
+
+  store.setReportContext(context)
+  const scoreText = typeof context.avgScore === 'number' ? `，均分 ${context.avgScore.toFixed(1)}` : ''
+  reportContextLabel.value = `${context.position || '最近一次面试'}${scoreText}`
+  if (!jobTitle.value && detail.session.position) {
+    jobTitle.value = detail.session.position
+  }
+  return true
+}
+
+async function loadReportContextForSession(sessionId: string) {
+  reportContextLabel.value = ''
+  store.setReportContext(null)
+
+  if (!sessionId) return false
+
+  try {
+    const detail = await fetchSessionDetail(sessionId)
+    return applyReportContext(detail)
+  } catch {
+    reportContextLabel.value = ''
+    store.setReportContext(null)
+    return false
+  }
+}
+
 async function loadLatestReportContext() {
   reportContextLabel.value = ''
   store.setReportContext(null)
@@ -66,20 +96,21 @@ async function loadLatestReportContext() {
     const completed = sessions.find((session) => session.status === 'completed')
     if (!completed) return
 
-    const detail = await fetchSessionDetail(completed.session_id)
-    const context = buildReportContext(detail)
-    if (!context) return
-
-    store.setReportContext(context)
-    const scoreText = typeof context.avgScore === 'number' ? `，均分 ${context.avgScore.toFixed(1)}` : ''
-    reportContextLabel.value = `${context.position || '最近一次面试'}${scoreText}`
-    if (!jobTitle.value && detail.session.position) {
-      jobTitle.value = detail.session.position
-    }
+    await loadReportContextForSession(completed.session_id)
   } catch {
     reportContextLabel.value = ''
     store.setReportContext(null)
   }
+}
+
+async function loadExistingResumeReportContext() {
+  if (!existingResumeSessionId.value) {
+    reportContextLabel.value = ''
+    store.setReportContext(null)
+    return
+  }
+
+  await loadReportContextForSession(existingResumeSessionId.value)
 }
 
 onMounted(async () => {
@@ -87,8 +118,14 @@ onMounted(async () => {
   if (isReusableOcrText(localOcr)) {
     existingOcrText.value = localOcr
     existingResumeName.value = interviewStore.config.resumeFileName || '面试中的简历'
+    existingResumeSessionId.value = (
+      interviewStore.config.resumeSourceSessionId
+      || interviewStore.lastSavedSessionId
+      || interviewStore.currentSessionId
+      || ''
+    )
     jobTitle.value = interviewStore.config.jobTitle || ''
-    await loadLatestReportContext()
+    await loadExistingResumeReportContext()
     loadingExisting.value = false
     return
   }
@@ -99,12 +136,16 @@ onMounted(async () => {
     if (isReusableOcrText(latestOcrText)) {
       existingOcrText.value = latestOcrText
       existingResumeName.value = resume?.file_name || '历史简历'
+      existingResumeSessionId.value = resume?.session_id || ''
+      await loadExistingResumeReportContext()
     }
   } catch {
     // ignore
   }
 
-  await loadLatestReportContext()
+  if (!existingOcrText.value) {
+    await loadLatestReportContext()
+  }
   loadingExisting.value = false
 })
 
@@ -127,14 +168,16 @@ function triggerFileInput() {
   fileInput.value?.click()
 }
 
-function switchToUpload() {
+async function switchToUpload() {
   mode.value = 'upload'
   file.value = null
+  await loadLatestReportContext()
 }
 
-function switchToExisting() {
+async function switchToExisting() {
   mode.value = 'existing'
   file.value = null
+  await loadExistingResumeReportContext()
 }
 
 function syncQuestionnaireContext() {
