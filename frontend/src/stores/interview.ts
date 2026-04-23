@@ -97,7 +97,7 @@ export const useInterviewStore = defineStore('interview', () => {
   const isEnding = computed(() => endStatus.value === 'generating')
 
   const config = ref<InterviewConfig>({
-    jobTitle: '高级前端开发工程师',
+    jobTitle: '',
     jobRequirements: '',
     style: 'strict',
     interviewType: 'technical',

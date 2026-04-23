@@ -31,7 +31,7 @@ onMounted(() => {
 const isGuestPage = computed(() => route.meta.guest === true)
 
 const routeLoadingMessageMap: Record<string, string> = {
-  'runtime-config': '正在加载接口配置页...',
+  'runtime-config': '正在加载应用设置页...',
   setup: '正在加载面试配置页...',
   interview: '正在进入面试房间...',
   report: '正在加载评估报告...',
@@ -98,12 +98,13 @@ const navItems = computed(() => [
   { name: 'interview', icon: MessageSquare, label: '面试房间', path: '/interview', disabled: !interview.canEnterInterviewRoom, group: '面试流程' },
   { name: 'report', icon: ClipboardList, label: '评估报告', path: '/report', group: '面试流程' },
   { name: 'summary', icon: BookOpen, label: '面经总结', path: '/summary', group: '面试流程' },
-  { name: 'runtime-config', icon: Settings, label: '接口配置', path: '/config', group: '工具箱' },
   { name: 'resume-optimizer', icon: Sparkles, label: '简历优化', path: '/resume-optimizer', group: '工具箱' },
   { name: 'resume-builder', icon: FilePlus2, label: '简历生成', path: '/resume-builder', group: '工具箱' },
   { name: 'my-resumes', icon: FileUser, label: '我的简历', path: '/my-resumes', group: '工具箱' },
   { name: 'career-planning', icon: Map, label: '职业规划', routeName: 'career-planning-overview', path: '/career-planning/overview', group: '工具箱' },
 ])
+
+const settingsNavItem = { name: 'runtime-config', icon: Settings, label: '应用设置', path: '/config' }
 
 const currentNav = computed(() => {
   if (route.name === 'interview') return 'interview'
@@ -117,6 +118,9 @@ const currentNav = computed(() => {
   if (typeof route.name === 'string' && route.name.startsWith('career-planning')) return 'career-planning'
   return 'setup'
 })
+
+const isSettingsRoute = computed(() => route.name === 'runtime-config')
+const shouldUseCleanMain = computed(() => !isGuestPage.value)
 
 function navigateTo(item: { name?: string; path: string; routeName?: string; disabled?: boolean }) {
   if (item.disabled) return
@@ -152,8 +156,7 @@ function goLanding() {
 }
 
 function openSettings() {
-  if (route.name === 'runtime-config') return
-  router.push('/config')
+  navigateTo(settingsNavItem)
 }
 
 function toggleSidebar() {
@@ -203,22 +206,8 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="custom-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div class="px-4 pt-4">
-          <button
-            type="button"
-            @click="handleThemeToggle"
-            class="app-sidebar-pill flex w-full items-center py-3 text-sm font-semibold"
-            :class="isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4'"
-            :title="theme.isDark ? '切换到浅色模式' : '切换到深色模式'"
-          >
-            <Sun v-if="theme.isDark" class="w-5 h-5 text-amber-400" />
-            <Moon v-else class="w-5 h-5" />
-            <span v-if="!isSidebarCollapsed">{{ theme.isDark ? '浅色模式' : '深色模式' }}</span>
-          </button>
-        </div>
-
         <!-- 导航菜单 -->
-        <nav class="mt-5 flex flex-col gap-2 px-4 pb-4">
+        <nav class="flex flex-col gap-2 px-4 pb-4 pt-5">
           <div v-if="!isSidebarCollapsed" class="app-nav-group-title mb-2 px-2">面试流程</div>
           <button
             v-for="item in navItems.filter(i => i.group === '面试流程')" :key="item.name"
@@ -276,21 +265,47 @@ onBeforeUnmount(() => {
         <button
           @click="openSettings"
           class="app-sidebar-pill flex w-full items-center py-3 text-sm font-semibold"
-          :class="isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4'"
+          :class="[
+            isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4',
+            isSettingsRoute ? 'app-sidebar-pill--active' : ''
+          ]"
           :title="isSidebarCollapsed ? '应用设置' : undefined"
         >
           <Settings class="w-5 h-5" />
           <span v-if="!isSidebarCollapsed">应用设置</span>
         </button>
         <div class="app-user-card rounded-[24px] py-3" :class="isSidebarCollapsed ? 'px-3' : 'px-4'">
-          <div class="flex items-center" :class="isSidebarCollapsed ? 'justify-center' : 'gap-3'">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20">
-              <Bot class="h-4 w-4" />
+          <div class="app-user-card__inner" :class="{ 'app-user-card__inner--collapsed': isSidebarCollapsed }">
+            <div class="app-user-card__identity" :class="isSidebarCollapsed ? 'justify-center' : ''">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20">
+                <Bot class="h-4 w-4" />
+              </div>
+              <div v-if="!isSidebarCollapsed" class="min-w-0">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">单机模式</p>
+                <p class="mt-1 truncate text-sm font-semibold text-slate-700 dark:text-slate-200">{{ auth.user?.display_name || auth.user?.username || '本地用户' }}</p>
+              </div>
             </div>
-            <div v-if="!isSidebarCollapsed" class="min-w-0">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">单机模式</p>
-              <p class="mt-1 truncate text-sm font-semibold text-slate-700 dark:text-slate-200">{{ auth.user?.display_name || auth.user?.username || '本地用户' }}</p>
-            </div>
+            <button
+              type="button"
+              class="app-theme-switch app-theme-switch--embedded"
+              :class="[
+                { 'app-theme-switch--dark': theme.isDark },
+                isSidebarCollapsed ? 'app-theme-switch--compact' : '',
+              ]"
+              :title="theme.isDark ? '切换到浅色模式' : '切换到深色模式'"
+              :aria-pressed="theme.isDark"
+              @click="handleThemeToggle"
+            >
+              <span class="app-theme-switch__label">{{ theme.isDark ? '深色' : '浅色' }}</span>
+              <span class="app-theme-switch__track">
+                <Sun class="app-theme-switch__track-icon app-theme-switch__track-icon--sun h-3.5 w-3.5" />
+                <Moon class="app-theme-switch__track-icon app-theme-switch__track-icon--moon h-3.5 w-3.5" />
+                <span class="app-theme-switch__thumb">
+                  <Moon v-if="theme.isDark" class="h-3.5 w-3.5" />
+                  <Sun v-else class="h-3.5 w-3.5" />
+                </span>
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -322,33 +337,39 @@ onBeforeUnmount(() => {
     </nav>
 
     <!-- ================== 右侧主内容区 ================== -->
-    <main class="app-main custom-scroll relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-20 md:pb-0">
-      <BlobBackground />
+    <main
+      class="app-main custom-scroll relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-20 md:pb-0"
+      :class="{ 'app-main--clean': shouldUseCleanMain }"
+    >
+      <BlobBackground v-if="!shouldUseCleanMain" />
       <div class="relative z-10 min-h-full">
-        <div v-if="!isGuestPage" class="pointer-events-none absolute left-4 top-4 z-20 md:hidden">
+        <div v-if="!isGuestPage" class="pointer-events-none absolute right-4 top-4 z-20 flex items-center gap-2 sm:gap-3 md:hidden">
           <button
             type="button"
-            class="app-top-icon pointer-events-auto inline-flex h-11 w-11 items-center justify-center rounded-full"
+            class="app-theme-switch pointer-events-auto"
+            :class="{ 'app-theme-switch--dark': theme.isDark }"
             :title="theme.isDark ? '切换到浅色模式' : '切换到深色模式'"
+            :aria-pressed="theme.isDark"
             @click="handleThemeToggle"
           >
-            <Sun v-if="theme.isDark" class="h-5 w-5 text-amber-400" />
-            <Moon v-else class="h-5 w-5" />
+            <span class="app-theme-switch__label hidden sm:inline">{{ theme.isDark ? '深色' : '浅色' }}</span>
+            <span class="app-theme-switch__track">
+              <Sun class="app-theme-switch__track-icon app-theme-switch__track-icon--sun h-3.5 w-3.5" />
+              <Moon class="app-theme-switch__track-icon app-theme-switch__track-icon--moon h-3.5 w-3.5" />
+              <span class="app-theme-switch__thumb">
+                <Moon v-if="theme.isDark" class="h-3.5 w-3.5" />
+                <Sun v-else class="h-3.5 w-3.5" />
+              </span>
+            </span>
           </button>
-        </div>
-        <div v-if="!isGuestPage" class="pointer-events-none absolute right-4 top-4 z-20 flex items-center gap-3">
-          <div class="app-top-chip pointer-events-auto hidden items-center gap-3 rounded-full px-4 py-2 text-sm md:flex">
-            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-            <span class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">单机模式</span>
-            <span class="max-w-[180px] truncate font-semibold">{{ auth.user?.display_name || auth.user?.username || '本地用户' }}</span>
-          </div>
           <button
             type="button"
-            class="app-top-chip pointer-events-auto inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+            class="app-top-chip pointer-events-auto inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold md:hidden"
+            :class="{ 'app-top-chip--active': isSettingsRoute }"
             @click="openSettings"
           >
             <Settings class="h-4 w-4" />
-            <span class="hidden sm:inline">设置</span>
+            <span class="hidden sm:inline">应用设置</span>
           </button>
         </div>
         <div
@@ -447,7 +468,8 @@ onBeforeUnmount(() => {
 .app-icon-control,
 .app-sidebar-pill,
 .app-top-chip,
-.app-top-icon {
+.app-top-icon,
+.app-theme-switch {
   border: 1px solid rgba(226, 232, 240, 0.92);
   background: rgba(255, 255, 255, 0.82);
   color: #475569;
@@ -464,11 +486,134 @@ onBeforeUnmount(() => {
 .app-icon-control:hover,
 .app-sidebar-pill:hover,
 .app-top-chip:hover,
-.app-top-icon:hover {
+.app-top-icon:hover,
+.app-theme-switch:hover {
   transform: translateY(-1px);
   border-color: rgba(129, 140, 248, 0.42);
   color: #4f46e5;
   box-shadow: 0 14px 30px rgba(79, 70, 229, 0.12);
+}
+
+.app-top-chip--active {
+  color: #1e3a8a;
+  border-color: rgba(129, 140, 248, 0.48);
+  background:
+    linear-gradient(135deg, rgba(224, 242, 254, 0.74) 0%, rgba(238, 242, 255, 0.8) 55%, rgba(252, 231, 243, 0.72) 100%);
+  box-shadow:
+    0 14px 30px rgba(79, 70, 229, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.app-sidebar-pill--active {
+  color: #1e3a8a;
+  border-color: rgba(129, 140, 248, 0.48);
+  background:
+    linear-gradient(135deg, rgba(224, 242, 254, 0.74) 0%, rgba(238, 242, 255, 0.8) 55%, rgba(252, 231, 243, 0.72) 100%);
+  box-shadow:
+    0 14px 30px rgba(79, 70, 229, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.app-theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 118px;
+  padding: 0.45rem 0.5rem 0.45rem 0.85rem;
+  border-radius: 9999px;
+}
+
+.app-theme-switch__label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.app-theme-switch__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 74px;
+  height: 38px;
+  padding: 0 0.55rem;
+  border-radius: 9999px;
+  background:
+    linear-gradient(90deg, rgba(254, 240, 138, 0.7) 0%, rgba(255, 255, 255, 0.92) 48%, rgba(226, 232, 240, 0.92) 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 3px rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.app-theme-switch__track-icon {
+  position: relative;
+  z-index: 1;
+  transition: opacity 180ms ease, color 180ms ease;
+}
+
+.app-theme-switch__track-icon--sun {
+  color: #d97706;
+}
+
+.app-theme-switch__track-icon--moon {
+  color: #64748b;
+  opacity: 0.68;
+}
+
+.app-theme-switch__thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  color: #fff7ed;
+  box-shadow:
+    0 8px 18px rgba(249, 115, 22, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition:
+    transform 220ms ease,
+    background 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.app-theme-switch--dark .app-theme-switch__label {
+  color: #cbd5e1;
+}
+
+.app-theme-switch--dark .app-theme-switch__track {
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 41, 59, 0.92) 52%, rgba(51, 65, 85, 0.88) 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(15, 23, 42, 0.55),
+    inset 0 -1px 3px rgba(15, 23, 42, 0.42);
+}
+
+.app-theme-switch--dark .app-theme-switch__track-icon--sun {
+  color: #64748b;
+  opacity: 0.45;
+}
+
+.app-theme-switch--dark .app-theme-switch__track-icon--moon {
+  color: #c4b5fd;
+  opacity: 1;
+}
+
+.app-theme-switch--dark .app-theme-switch__thumb {
+  transform: translateX(36px);
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+  color: #dbeafe;
+  box-shadow:
+    0 10px 22px rgba(29, 78, 216, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .app-nav-group-title {
@@ -482,7 +627,10 @@ onBeforeUnmount(() => {
 .app-nav-button {
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.9);
   border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
   text-align: left;
   transition:
     transform 220ms ease,
@@ -493,14 +641,15 @@ onBeforeUnmount(() => {
 }
 
 .app-nav-button--idle {
-  color: #64748b;
+  color: #475569;
 }
 
 .app-nav-button--idle:hover {
   transform: translateY(-1px);
   color: #334155;
-  background:
-    linear-gradient(90deg, rgba(240, 249, 255, 0.42) 0%, rgba(245, 243, 255, 0.36) 100%);
+  border-color: rgba(129, 140, 248, 0.26);
+  background: #ffffff;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
 }
 
 .app-nav-button--idle::before {
@@ -524,11 +673,11 @@ onBeforeUnmount(() => {
 
 .app-nav-button--active {
   color: #1e3a8a;
-  background:
-    linear-gradient(135deg, rgba(224, 242, 254, 0.72) 0%, rgba(238, 242, 255, 0.78) 52%, rgba(252, 231, 243, 0.66) 100%);
+  border-color: rgba(129, 140, 248, 0.36);
+  background: #ffffff;
   box-shadow:
-    0 12px 28px rgba(79, 70, 229, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    0 0 0 2px rgba(129, 140, 248, 0.12),
+    0 14px 30px rgba(15, 23, 42, 0.08);
 }
 
 .app-nav-button--active::before {
@@ -552,8 +701,27 @@ onBeforeUnmount(() => {
 .app-nav-button--disabled:hover {
   transform: none;
   color: #cbd5e1;
-  background: transparent;
+  background: #ffffff;
   box-shadow: none;
+}
+
+.app-user-card__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.app-user-card__inner--collapsed {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.app-user-card__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
 }
 
 .app-sidebar__footer {
@@ -566,6 +734,34 @@ onBeforeUnmount(() => {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(248, 250, 252, 0.92) 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.app-theme-switch--embedded {
+  flex-shrink: 0;
+}
+
+.app-theme-switch--compact {
+  min-width: auto;
+  gap: 0;
+  padding: 0.35rem;
+}
+
+.app-theme-switch--compact .app-theme-switch__label {
+  display: none;
+}
+
+.app-theme-switch--compact .app-theme-switch__track {
+  width: 68px;
+  height: 36px;
+}
+
+.app-theme-switch--compact .app-theme-switch__thumb {
+  width: 28px;
+  height: 28px;
+}
+
+.app-theme-switch--compact.app-theme-switch--dark .app-theme-switch__thumb {
+  transform: translateX(32px);
 }
 
 .app-mobile-nav {
@@ -614,6 +810,10 @@ onBeforeUnmount(() => {
   background: transparent;
 }
 
+.app-main--clean {
+  background: #ffffff;
+}
+
 :global(html.dark) .app-shell {
   background:
     radial-gradient(920px circle at -10% -12%, rgba(56, 189, 248, 0.14), transparent 44%),
@@ -643,6 +843,7 @@ onBeforeUnmount(() => {
 :global(html.dark) .app-sidebar-pill,
 :global(html.dark) .app-top-chip,
 :global(html.dark) .app-top-icon,
+:global(html.dark) .app-theme-switch,
 :global(html.dark) .app-user-card {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
@@ -652,14 +853,37 @@ onBeforeUnmount(() => {
 :global(html.dark) .app-icon-control:hover,
 :global(html.dark) .app-sidebar-pill:hover,
 :global(html.dark) .app-top-chip:hover,
-:global(html.dark) .app-top-icon:hover {
+:global(html.dark) .app-top-icon:hover,
+:global(html.dark) .app-theme-switch:hover {
   border-color: rgba(129, 140, 248, 0.4);
   color: #c4b5fd;
   box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
 }
 
+:global(html.dark) .app-top-chip--active {
+  color: #e2e8f0;
+  border-color: rgba(129, 140, 248, 0.38);
+  background:
+    linear-gradient(135deg, rgba(30, 58, 138, 0.42) 0%, rgba(67, 56, 202, 0.34) 55%, rgba(131, 24, 67, 0.28) 100%);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+}
+
+:global(html.dark) .app-sidebar-pill--active {
+  color: #e2e8f0;
+  border-color: rgba(129, 140, 248, 0.38);
+  background:
+    linear-gradient(135deg, rgba(30, 58, 138, 0.42) 0%, rgba(67, 56, 202, 0.34) 55%, rgba(131, 24, 67, 0.28) 100%);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+}
+
 :global(html.dark) .app-nav-group-title {
   color: #64748b;
+}
+
+:global(html.dark) .app-nav-button {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
 }
 
 :global(html.dark) .app-nav-button--idle {
@@ -668,18 +892,26 @@ onBeforeUnmount(() => {
 
 :global(html.dark) .app-nav-button--idle:hover {
   color: #e2e8f0;
+  border-color: rgba(129, 140, 248, 0.28);
   background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
 }
 
 :global(html.dark) .app-nav-button--active {
-  color: #c4b5fd;
-  background:
-    linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(67, 56, 202, 0.34) 52%, rgba(131, 24, 67, 0.28) 100%);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  color: #e2e8f0;
+  border-color: rgba(129, 140, 248, 0.34);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 2px rgba(129, 140, 248, 0.14),
+    0 14px 30px rgba(0, 0, 0, 0.28);
 }
 
 :global(html.dark) .app-nav-button--disabled {
   color: #475569;
+}
+
+:global(html.dark) .app-nav-button--disabled:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 :global(html.dark) .app-mobile-nav {
@@ -694,5 +926,31 @@ onBeforeUnmount(() => {
 
 :global(html.dark) .app-mobile-tab--idle:hover {
   color: #e2e8f0;
+}
+
+:global(html.dark) .app-main--clean {
+  background: #020617;
+}
+
+@media (max-width: 639px) {
+  .app-theme-switch {
+    min-width: auto;
+    gap: 0;
+    padding: 0.35rem;
+  }
+
+  .app-theme-switch__track {
+    width: 68px;
+    height: 36px;
+  }
+
+  .app-theme-switch__thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .app-theme-switch--dark .app-theme-switch__thumb {
+    transform: translateX(32px);
+  }
 }
 </style>
