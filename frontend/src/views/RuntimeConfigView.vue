@@ -256,12 +256,6 @@ const settingsPanels = computed(() => [
     indicator: speechConfigured.value ? '语音已配置' : '语音待配置',
   },
 ])
-const panelIcons: Record<SettingsPanelId, typeof UserRound> = {
-  identity: UserRound,
-  models: Bot,
-  ocr: ShieldCheck,
-  speech: AudioLines,
-}
 
 const settingsPanelFallback = {
   id: 'identity' as const,
@@ -661,68 +655,72 @@ onMounted(() => {
           </div>
 
           <div class="settings-runtime-hub__grid">
-            <section class="settings-runtime-hub__section settings-runtime-hub__section--overview">
-              <div class="settings-dashboard-card__head">
-                <div>
-                  <p class="settings-section-eyebrow">Dashboard</p>
-                  <h4>运行概览</h4>
-                  <p>把运行仪表盘和运行环境合在一起，只保留本机用户、配置文件、后端加载状态和密钥总量这些真正需要对照的信息。</p>
+            <div class="settings-runtime-hub__left">
+              <section class="settings-runtime-hub__section settings-runtime-hub__section--overview">
+                <div class="settings-dashboard-card__head">
+                  <div>
+                    <p class="settings-section-eyebrow">Dashboard</p>
+                    <h4>运行概览</h4>
+                    <p>把运行仪表盘和运行环境合在一起，只保留本机用户、配置文件、后端加载状态和密钥总量这些真正需要对照的信息。</p>
+                  </div>
                 </div>
-              </div>
-              <div class="settings-metric-grid settings-metric-grid--overview">
-                <article v-for="item in runtimeOverviewItems" :key="item.label" class="settings-metric settings-metric--overview">
-                  <span class="settings-metric__label">{{ item.label }}</span>
-                  <strong class="settings-metric__value">{{ item.value }}</strong>
-                </article>
-              </div>
-            </section>
-
-            <section class="settings-runtime-hub__section settings-runtime-hub__section--status">
-              <div class="settings-dashboard-card__head">
-                <div>
-                  <p class="settings-section-eyebrow">Capability Status</p>
-                  <h4>能力状态</h4>
-                  <p>把大模型情况、OCR 状态和语音状态压缩进一个更窄的状态卡里，方便填写后快速确认接入是否生效。</p>
-                </div>
-              </div>
-
-              <div class="settings-runtime-status">
-                <div class="settings-runtime-status__summary">
-                  <article class="settings-runtime-status__tile">
-                    <span class="settings-metric__label">大模型</span>
-                    <strong class="settings-metric__value">{{ availableModelCount }} / {{ models.length || 0 }} 可用</strong>
-                  </article>
-                  <article class="settings-runtime-status__tile">
-                    <span class="settings-metric__label">OCR</span>
-                    <strong class="settings-metric__value">{{ ocrConfigured ? '已配置' : '待配置' }}</strong>
-                  </article>
-                  <article class="settings-runtime-status__tile">
-                    <span class="settings-metric__label">语音</span>
-                    <strong class="settings-metric__value">{{ speechConfigured ? '已配置' : '待配置' }}</strong>
+                <div class="settings-metric-grid settings-metric-grid--overview">
+                  <article v-for="item in runtimeOverviewItems" :key="item.label" class="settings-metric settings-metric--overview">
+                    <span class="settings-metric__label">{{ item.label }}</span>
+                    <strong class="settings-metric__value">{{ item.value }}</strong>
                   </article>
                 </div>
+              </section>
 
-                <div class="settings-runtime-status__models">
-                  <div class="settings-runtime-status__models-head">
-                    <span class="settings-section-eyebrow">Model List</span>
-                    <span class="settings-inline-badge">
-                      <Bot class="h-3.5 w-3.5" />
-                      {{ models.length || 0 }} 项
+              <section class="settings-runtime-hub__section settings-runtime-hub__section--status">
+                <div class="settings-dashboard-card__head">
+                  <div>
+                    <p class="settings-section-eyebrow">Capability Status</p>
+                    <h4>能力状态</h4>
+                    <p>把大模型情况、OCR 状态和语音状态压缩进一个更窄的状态卡里，方便填写后快速确认接入是否生效。</p>
+                  </div>
+                </div>
+
+                <div class="settings-runtime-status">
+                  <div class="settings-runtime-status__summary">
+                    <article class="settings-runtime-status__tile">
+                      <span class="settings-metric__label">大模型</span>
+                      <strong class="settings-metric__value">{{ availableModelCount }} / {{ models.length || 0 }} 可用</strong>
+                    </article>
+                    <article class="settings-runtime-status__tile">
+                      <span class="settings-metric__label">OCR</span>
+                      <strong class="settings-metric__value">{{ ocrConfigured ? '已配置' : '待配置' }}</strong>
+                    </article>
+                    <article class="settings-runtime-status__tile">
+                      <span class="settings-metric__label">语音</span>
+                      <strong class="settings-metric__value">{{ speechConfigured ? '已配置' : '待配置' }}</strong>
+                    </article>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <section class="settings-runtime-hub__section settings-runtime-hub__section--models">
+              <div class="settings-runtime-status__models">
+                <div class="settings-runtime-status__models-head">
+                  <span class="settings-section-eyebrow">Model List</span>
+                  <span class="settings-inline-badge">
+                    <Bot class="h-3.5 w-3.5" />
+                    {{ models.length || 0 }} 项
+                  </span>
+                </div>
+                <div class="space-y-2.5">
+                  <div v-for="model in models" :key="model.key" class="settings-runtime-status__model-row">
+                    <div class="min-w-0">
+                      <div class="truncate font-semibold text-slate-800 dark:text-slate-100">{{ model.label }}</div>
+                      <div class="truncate text-[11px] text-slate-500 dark:text-slate-400">{{ model.key }}</div>
+                    </div>
+                    <span class="settings-status-chip" :class="model.available ? 'settings-status-chip--success' : 'settings-status-chip--warning'">
+                      {{ model.available ? '可用' : '未配置' }}
                     </span>
                   </div>
-                  <div class="space-y-2.5">
-                    <div v-for="model in models" :key="model.key" class="settings-runtime-status__model-row">
-                      <div class="min-w-0">
-                        <div class="truncate font-semibold text-slate-800 dark:text-slate-100">{{ model.label }}</div>
-                        <div class="truncate text-[11px] text-slate-500 dark:text-slate-400">{{ model.key }}</div>
-                      </div>
-                      <span class="settings-status-chip" :class="model.available ? 'settings-status-chip--success' : 'settings-status-chip--warning'">
-                        {{ model.available ? '可用' : '未配置' }}
-                      </span>
-                    </div>
-                    <div v-if="!models.length" class="settings-model-empty">
-                      尚未读取到模型状态。
-                    </div>
+                  <div v-if="!models.length" class="settings-model-empty">
+                    尚未读取到模型状态。
                   </div>
                 </div>
               </div>
@@ -739,34 +737,43 @@ onMounted(() => {
             </div>
             <div class="settings-editor-card__actions">
               <span v-if="activeSettingsPanelInfo.indicator" class="settings-stage__badge">{{ activeSettingsPanelInfo.indicator }}</span>
-              <button type="button" class="settings-secondary-btn" @click="openGuideDialog">
-                <Image class="h-4 w-4" />
-                查看教程
-              </button>
             </div>
           </div>
 
           <div class="settings-step-nav">
-            <button
+            <div
               v-for="(panel, index) in settingsPanels"
               :key="panel.id"
-              type="button"
               class="settings-step-nav__item"
               :class="activePanel === panel.id ? 'settings-step-nav__item--active' : ''"
               @click="activePanel = panel.id"
             >
               <span class="settings-step-nav__lead">
                 <span class="settings-step-nav__index">{{ index + 1 }}</span>
-                <span class="settings-step-nav__icon">
-                  <component :is="panelIcons[panel.id]" class="h-4 w-4" />
-                </span>
               </span>
-              <span class="settings-step-nav__copy">
+              <span class="settings-step-nav__copy settings-step-nav__title">
                 <strong>{{ panel.title }}</strong>
+              </span>
+              <span class="settings-step-nav__copy settings-step-nav__desc">
                 <span>{{ panel.description }}</span>
               </span>
-              <span class="settings-step-nav__state">{{ activePanel === panel.id ? '当前步骤' : panel.indicator }}</span>
-            </button>
+              <div class="settings-step-nav__footer">
+                <span v-if="activePanel === panel.id" class="settings-step-nav__state">当前步骤</span>
+                <span v-else-if="panel.id === 'identity'" class="settings-step-nav__state">
+                  同源地址 /<br />
+                  Vite 代理
+                </span>
+                <span v-else class="settings-step-nav__state">{{ panel.indicator }}</span>
+                <button
+                  type="button"
+                  class="settings-secondary-btn"
+                  @click.stop="activePanel = panel.id; openGuideDialog()"
+                >
+                  <Image class="h-4 w-4" />
+                  查看教程
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="settings-editor-card__body">
@@ -999,7 +1006,7 @@ onMounted(() => {
           </div>
 
           <div class="settings-savebar">
-            <button type="button" class="settings-primary-btn" :disabled="loading || saving" @click="handleSave">
+            <button type="button" class="ui-btn ui-btn-primary" :disabled="loading || saving" @click="handleSave">
               {{ saving ? '保存中...' : '保存配置' }}
             </button>
             <div class="flex min-w-0 flex-1 flex-wrap items-center gap-3">
@@ -1412,8 +1419,10 @@ onMounted(() => {
 }
 
 .settings-step-nav__item {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
   gap: 0.9rem;
   align-items: start;
   border-radius: 1.3rem;
@@ -1426,6 +1435,40 @@ onMounted(() => {
     border-color 180ms ease,
     box-shadow 180ms ease,
     background-color 180ms ease;
+}
+
+.settings-step-nav__footer {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  grid-column: 1 / -1;
+  grid-row: 3;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+}
+
+.settings-step-nav__lead {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+}
+
+.settings-step-nav__copy {
+  grid-column: 2;
+}
+
+.settings-step-nav__title {
+  grid-row: 1;
+  align-self: center;
+}
+
+.settings-step-nav__desc {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.settings-step-nav__state {
+  margin-top: 0;
 }
 
 .settings-step-nav__item:hover {
@@ -1488,17 +1531,25 @@ onMounted(() => {
 }
 
 .settings-step-nav__state {
-  grid-column: 2;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
   width: fit-content;
   margin-top: 0.15rem;
   border-radius: 9999px;
   border: 1px solid rgba(226, 232, 240, 0.88);
   background: rgba(255, 255, 255, 0.9);
   padding: 0.42rem 0.72rem;
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #475569;
+}
+
+.settings-step-nav__footer .settings-secondary-btn {
+  padding: 0.42rem 0.72rem;
+  font-size: 0.7rem;
+  border-radius: 9999px;
 }
 
 .settings-panel-stage__intro,
@@ -2017,6 +2068,11 @@ onMounted(() => {
   display: grid;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.settings-runtime-hub__left {
+  display: grid;
+  gap: 1rem;
 }
 
 .settings-runtime-hub__section {
@@ -2677,6 +2733,8 @@ onMounted(() => {
   font-size: 0.96rem;
   line-height: 1.55;
   color: #0f172a;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .settings-model-row {
@@ -2771,6 +2829,10 @@ onMounted(() => {
 
   .settings-runtime-hub__grid {
     grid-template-columns: minmax(0, 1.16fr) minmax(320px, 0.82fr);
+  }
+
+  .settings-runtime-hub__section--models {
+    align-self: start;
   }
 }
 

@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
     <aside
       v-if="!isGuestPage"
       class="app-sidebar z-20 hidden min-h-0 flex-col overflow-hidden transition-[width] duration-300 md:flex"
-      :class="isSidebarCollapsed ? 'w-[92px]' : 'w-[280px]'"
+      :class="[isSidebarCollapsed ? 'w-[120px]' : 'w-[280px]', { 'app-sidebar--collapsed': isSidebarCollapsed }]"
     >
       <!-- Logo -->
       <div class="app-sidebar__header flex h-20 shrink-0 items-center" :class="isSidebarCollapsed ? 'px-3' : 'px-6'">
@@ -214,7 +214,7 @@ onBeforeUnmount(() => {
             @click="navigateTo(item)"
             class="app-nav-button group flex items-center py-3 text-sm font-bold"
             :class="[
-              isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4',
+              isSidebarCollapsed ? 'justify-center px-3' : 'justify-center gap-3 px-4',
               getNavItemClass(
                 item,
                 'app-nav-button--active',
@@ -225,8 +225,10 @@ onBeforeUnmount(() => {
             :disabled="item.disabled"
             :title="isSidebarCollapsed ? item.label : undefined"
           >
-            <component :is="item.icon" class="w-5 h-5 transition-transform group-hover:scale-110" />
-            <span v-if="!isSidebarCollapsed">{{ item.label }}</span>
+            <span class="flex flex-1 items-center justify-center" :class="isSidebarCollapsed ? '' : 'gap-3'">
+              <component :is="item.icon" class="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span v-if="!isSidebarCollapsed">{{ item.label }}</span>
+            </span>
           </button>
           <div v-if="!isSidebarCollapsed" class="app-nav-group-title mt-4 mb-2 px-2">工具箱</div>
           <button
@@ -234,7 +236,7 @@ onBeforeUnmount(() => {
             @click="navigateTo(item)"
             class="app-nav-button group flex items-center py-3 text-sm font-bold"
             :class="[
-              isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4',
+              isSidebarCollapsed ? 'justify-center px-3' : 'justify-center gap-3 px-4',
               getNavItemClass(
                 item,
                 'app-nav-button--active',
@@ -245,8 +247,10 @@ onBeforeUnmount(() => {
             :disabled="item.disabled"
             :title="isSidebarCollapsed ? item.label : undefined"
           >
-            <component :is="item.icon" class="w-5 h-5 transition-transform group-hover:scale-110" />
-            <span v-if="!isSidebarCollapsed">{{ item.label }}</span>
+            <span class="flex flex-1 items-center justify-center" :class="isSidebarCollapsed ? '' : 'gap-3'">
+              <component :is="item.icon" class="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span v-if="!isSidebarCollapsed">{{ item.label }}</span>
+            </span>
           </button>
         </nav>
       </div>
@@ -256,56 +260,67 @@ onBeforeUnmount(() => {
         <button
           @click="goLanding"
           class="app-sidebar-pill flex w-full items-center py-3 text-sm font-semibold"
-          :class="isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4'"
+          :class="isSidebarCollapsed ? 'justify-center px-3' : 'justify-center gap-3 px-4'"
           :title="isSidebarCollapsed ? '返回介绍页' : undefined"
         >
-          <ArrowLeft class="w-5 h-5" />
-          <span v-if="!isSidebarCollapsed">返回介绍页</span>
+          <span class="flex flex-1 items-center justify-center" :class="isSidebarCollapsed ? '' : 'gap-3'">
+            <ArrowLeft class="w-5 h-5" />
+            <span v-if="!isSidebarCollapsed">返回介绍页</span>
+          </span>
         </button>
         <button
           @click="openSettings"
           class="app-sidebar-pill flex w-full items-center py-3 text-sm font-semibold"
           :class="[
-            isSidebarCollapsed ? 'justify-center px-3' : 'gap-3 px-4',
+            isSidebarCollapsed ? 'justify-center px-3' : 'justify-center gap-3 px-4',
             isSettingsRoute ? 'app-sidebar-pill--active' : ''
           ]"
           :title="isSidebarCollapsed ? '应用设置' : undefined"
         >
-          <Settings class="w-5 h-5" />
-          <span v-if="!isSidebarCollapsed">应用设置</span>
+          <span class="flex flex-1 items-center justify-center" :class="isSidebarCollapsed ? '' : 'gap-3'">
+            <Settings class="w-5 h-5" />
+            <span v-if="!isSidebarCollapsed">应用设置</span>
+          </span>
         </button>
-        <div class="app-user-card rounded-[24px] py-3" :class="isSidebarCollapsed ? 'px-3' : 'px-4'">
-          <div class="app-user-card__inner" :class="{ 'app-user-card__inner--collapsed': isSidebarCollapsed }">
-            <div class="app-user-card__identity" :class="isSidebarCollapsed ? 'justify-center' : ''">
-              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20">
-                <Bot class="h-4 w-4" />
+        <div class="app-action-deck rounded-[24px] p-4" :class="{ 'app-action-deck--collapsed': isSidebarCollapsed }">
+          <div class="app-action-deck__layout">
+            <div class="app-action-deck__aux">
+              <div class="app-aux-card app-aux-card--mode" :title="isSidebarCollapsed ? '单机模式' : undefined">
+                <div class="app-aux-card__head">
+                  <div class="flex flex-1 items-center" :class="isSidebarCollapsed ? 'justify-center' : 'justify-center gap-3'">
+                    <div class="app-logo-mark flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white">
+                      <Bot class="h-4 w-4" />
+                    </div>
+                    <div v-if="!isSidebarCollapsed" class="app-aux-card__copy min-w-0">
+                      <p class="app-aux-card__label">单机模式</p>
+                      <p class="app-aux-card__value truncate">{{ auth.user?.display_name || auth.user?.username || '本地用户' }}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div v-if="!isSidebarCollapsed" class="min-w-0">
-                <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">单机模式</p>
-                <p class="mt-1 truncate text-sm font-semibold text-slate-700 dark:text-slate-200">{{ auth.user?.display_name || auth.user?.username || '本地用户' }}</p>
+              <div class="app-aux-card app-aux-card--theme" :title="theme.isDark ? '深色主题' : '浅色主题'">
+                <button
+                  type="button"
+                  class="app-theme-switch app-theme-switch--embedded"
+                  :class="[
+                    { 'app-theme-switch--dark': theme.isDark },
+                    isSidebarCollapsed ? 'app-theme-switch--compact' : '',
+                  ]"
+                  :aria-pressed="theme.isDark"
+                  @click="handleThemeToggle"
+                >
+                  <span class="app-theme-switch__label">{{ theme.isDark ? '深色' : '浅色' }}</span>
+                  <span class="app-theme-switch__track">
+                    <Sun class="app-theme-switch__track-icon app-theme-switch__track-icon--sun h-3.5 w-3.5" />
+                    <Moon class="app-theme-switch__track-icon app-theme-switch__track-icon--moon h-3.5 w-3.5" />
+                    <span class="app-theme-switch__thumb">
+                      <Moon v-if="theme.isDark" class="h-3.5 w-3.5" />
+                      <Sun v-else class="h-3.5 w-3.5" />
+                    </span>
+                  </span>
+                </button>
               </div>
             </div>
-            <button
-              type="button"
-              class="app-theme-switch app-theme-switch--embedded"
-              :class="[
-                { 'app-theme-switch--dark': theme.isDark },
-                isSidebarCollapsed ? 'app-theme-switch--compact' : '',
-              ]"
-              :title="theme.isDark ? '切换到浅色模式' : '切换到深色模式'"
-              :aria-pressed="theme.isDark"
-              @click="handleThemeToggle"
-            >
-              <span class="app-theme-switch__label">{{ theme.isDark ? '深色' : '浅色' }}</span>
-              <span class="app-theme-switch__track">
-                <Sun class="app-theme-switch__track-icon app-theme-switch__track-icon--sun h-3.5 w-3.5" />
-                <Moon class="app-theme-switch__track-icon app-theme-switch__track-icon--moon h-3.5 w-3.5" />
-                <span class="app-theme-switch__thumb">
-                  <Moon v-if="theme.isDark" class="h-3.5 w-3.5" />
-                  <Sun v-else class="h-3.5 w-3.5" />
-                </span>
-              </span>
-            </button>
           </div>
         </div>
       </div>
@@ -524,7 +539,7 @@ onBeforeUnmount(() => {
 }
 
 .app-theme-switch__label {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -627,6 +642,8 @@ onBeforeUnmount(() => {
 .app-nav-button {
   position: relative;
   overflow: hidden;
+  width: calc(100% - 3.75rem);
+  margin-inline: auto;
   border: 1px solid rgba(226, 232, 240, 0.9);
   border-radius: 1rem;
   background: #ffffff;
@@ -653,7 +670,7 @@ onBeforeUnmount(() => {
 }
 
 .app-nav-button--idle::before {
-  content: '';
+  content: none;
   position: absolute;
   left: 0.4rem;
   top: 50%;
@@ -674,14 +691,15 @@ onBeforeUnmount(() => {
 .app-nav-button--active {
   color: #1e3a8a;
   border-color: rgba(129, 140, 248, 0.36);
-  background: #ffffff;
+  background:
+    linear-gradient(135deg, rgba(224, 242, 254, 0.74) 0%, rgba(238, 242, 255, 0.8) 55%, rgba(252, 231, 243, 0.72) 100%);
   box-shadow:
     0 0 0 2px rgba(129, 140, 248, 0.12),
     0 14px 30px rgba(15, 23, 42, 0.08);
 }
 
 .app-nav-button--active::before {
-  content: '';
+  content: none;
   position: absolute;
   left: 0.35rem;
   top: 50%;
@@ -729,6 +747,29 @@ onBeforeUnmount(() => {
   border-top: 1px solid rgba(226, 232, 240, 0.68);
 }
 
+.app-sidebar-pill {
+  position: relative;
+  overflow: hidden;
+  width: calc(100% - 3.75rem);
+  margin-inline: auto;
+  border-radius: 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  text-align: left;
+}
+
+.app-aux-card--mode {
+  width: calc(100% - 2rem);
+  margin-inline: auto;
+}
+
+.app-sidebar--collapsed .app-nav-button,
+.app-sidebar--collapsed .app-sidebar-pill,
+.app-sidebar--collapsed .app-aux-card--mode,
+.app-sidebar--collapsed .app-aux-card--theme {
+  width: 100%;
+  margin-inline: 0;
+}
+
 .app-user-card {
   border: 1px solid rgba(226, 232, 240, 0.92);
   background:
@@ -738,6 +779,94 @@ onBeforeUnmount(() => {
 
 .app-theme-switch--embedded {
   flex-shrink: 0;
+  width: 100%;
+  justify-content: flex-start;
+  padding-left: 2.55rem;
+}
+
+.app-theme-switch--embedded .app-theme-switch__track {
+  margin-left: 0.35rem;
+}
+
+.app-action-deck {
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-action-deck__layout {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.9rem;
+}
+
+.app-action-deck__aux {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.app-aux-card {
+  border: 1px solid rgba(226, 232, 240, 0.88);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.84);
+  padding: 0.55rem 0.65rem;
+}
+
+.app-aux-card__head {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.app-aux-card__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  gap: 0.12rem;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.app-aux-card__label {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.15;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.app-aux-card__value {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.app-aux-card--mode .app-aux-card__value {
+  padding-left: 2px;
+}
+
+.app-aux-card--theme {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% - 2rem);
+  margin-inline: auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.app-action-deck--collapsed .app-action-deck__layout {
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .app-theme-switch--compact {
@@ -844,10 +973,20 @@ onBeforeUnmount(() => {
 :global(html.dark) .app-top-chip,
 :global(html.dark) .app-top-icon,
 :global(html.dark) .app-theme-switch,
-:global(html.dark) .app-user-card {
+:global(html.dark) .app-user-card,
+:global(html.dark) .app-action-deck,
+:global(html.dark) .app-aux-card {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
   color: #cbd5e1;
+}
+
+:global(html.dark) .app-aux-card__label {
+  color: #94a3b8;
+}
+
+:global(html.dark) .app-aux-card__value {
+  color: #e2e8f0;
 }
 
 :global(html.dark) .app-icon-control:hover,
@@ -932,6 +1071,16 @@ onBeforeUnmount(() => {
   background: #020617;
 }
 
+::global(html.dark) .app-action-deck {
+  border: none;
+  background: transparent;
+}
+
+::global(html.dark) .app-aux-card--theme {
+  border: none;
+  background: transparent;
+}
+
 @media (max-width: 639px) {
   .app-theme-switch {
     min-width: auto;
@@ -951,6 +1100,13 @@ onBeforeUnmount(() => {
 
   .app-theme-switch--dark .app-theme-switch__thumb {
     transform: translateX(32px);
+  }
+}
+
+@media (max-width: 600px) {
+  .app-action-deck__layout {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>

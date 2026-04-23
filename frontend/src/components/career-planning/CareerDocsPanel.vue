@@ -162,10 +162,10 @@ function copyToClipboard(text: string) {
 // 获取难度颜色
 function getDifficultyColor(difficulty: string) {
   const colors: Record<string, string> = {
-    '入门': 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
-    '进阶': 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300',
-    '中级': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300',
-    '高级': 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'
+    '入门': 'border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-300',
+    '进阶': 'border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-300',
+    '中级': 'border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-300',
+    '高级': 'border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-300'
   }
   return colors[difficulty] || colors['入门']
 }
@@ -185,7 +185,7 @@ function getCategoryIcon(icon: string) {
 </script>
 
 <template>
-  <section class="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm dark:border-white/10 dark:bg-[#0C0F17]/90">
+  <section class="rounded-3xl border border-slate-200/85 bg-white/90 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0C0F17]/90">
     <!-- 顶部标题区 -->
     <div class="mb-6 flex items-start justify-between gap-4">
       <div>
@@ -195,7 +195,7 @@ function getCategoryIcon(icon: string) {
         </p>
       </div>
       <div class="flex items-center gap-2">
-        <span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+        <span class="rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
           {{ filteredDocuments.length }} 篇精选内容
         </span>
       </div>
@@ -207,15 +207,14 @@ function getCategoryIcon(icon: string) {
         v-for="doc in filteredDocuments"
         :key="doc.id"
         @click="activeDocId = doc.id"
-        class="group cursor-pointer rounded-2xl border-2 p-4 transition-all duration-200"
+        class="group cursor-pointer rounded-2xl border p-4 transition-all duration-200"
         :class="activeDocument?.id === doc.id 
-          ? 'border-indigo-400 bg-indigo-50 shadow-lg shadow-indigo-100/50 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:shadow-none' 
-          : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-[#0B1220] dark:hover:border-indigo-500/30'"
+          ? 'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:shadow-none' 
+          : 'border-slate-200/90 bg-white/85 hover:border-indigo-300 hover:shadow-[0_14px_30px_rgba(79,70,229,0.1)] dark:border-white/10 dark:bg-white/5 dark:hover:border-indigo-500/30'"
       >
         <div class="flex items-start gap-3">
           <div 
-            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl shadow-sm"
-            :class="`bg-gradient-to-br ${doc.cover_gradient}`"
+            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-2xl shadow-sm dark:border-white/10 dark:bg-white/10"
           >
             {{ getCategoryIcon(doc.cover_icon) }}
           </div>
@@ -278,7 +277,7 @@ function getCategoryIcon(icon: string) {
           v-model="searchQuery"
           type="text"
           placeholder="搜索文档..."
-          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pl-10 text-sm text-slate-900 placeholder-slate-400 transition focus:border-indigo-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-slate-500"
+          class="w-full rounded-xl border border-slate-200/90 bg-white/85 px-4 py-2.5 pl-10 text-sm text-slate-900 placeholder-slate-400 transition focus:border-indigo-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-slate-500"
         />
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
       </div>
@@ -291,8 +290,8 @@ function getCategoryIcon(icon: string) {
           @click="selectedCategory = cat"
           class="rounded-full px-4 py-1.5 text-xs font-semibold transition"
           :class="selectedCategory === cat 
-            ? 'bg-indigo-500 text-white' 
-            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300'"
+            ? 'border border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white' 
+            : 'border border-slate-200 bg-white/80 text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:bg-white/10 dark:text-slate-300'"
         >
           {{ cat }}
         </button>
@@ -303,8 +302,8 @@ function getCategoryIcon(icon: string) {
         @click="favoriteOnly = !favoriteOnly"
         class="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition"
         :class="favoriteOnly 
-          ? 'bg-rose-500 text-white' 
-          : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300'"
+          ? 'border border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-400/40 dark:bg-rose-500/15 dark:text-rose-200' 
+          : 'border border-slate-200 bg-white/80 text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:bg-white/10 dark:text-slate-300'"
       >
         <span>❤️</span>
         <span>我的收藏</span>
@@ -332,34 +331,31 @@ function getCategoryIcon(icon: string) {
     <div v-if="activeDocument" class="space-y-4">
       <!-- 文档详情卡片 -->
       <div 
-        class="overflow-hidden rounded-2xl border-2 border-indigo-200/50 bg-white shadow-lg dark:border-indigo-500/30 dark:bg-[#0C0F17]"
+        class="overflow-hidden rounded-2xl border border-slate-200/85 bg-white shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0C0F17]"
       >
         <!-- 详情头部 -->
-        <div 
-          class="relative p-5 text-white"
-          :class="`bg-gradient-to-br ${activeDocument.cover_gradient}`"
-        >
-          <div class="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/10"></div>
+        <div class="relative border-b border-slate-200/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(248,250,252,0.9)_100%)] p-5 text-slate-900 dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(10,10,15,0.92)_0%,rgba(12,15,23,0.94)_100%)] dark:text-white">
+          <div class="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-indigo-200/25 dark:bg-indigo-400/10"></div>
           <div class="relative">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-bold">
+                <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                   {{ activeDocument.difficulty }}
                 </span>
-                <span class="flex items-center gap-1 text-xs text-white/80">
+                <span class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                   ⏱️ {{ activeDocument.read_time }}分钟阅读
                 </span>
               </div>
               <div class="flex items-center gap-2">
                 <button
                   @click="toggleFavorite(activeDocument.id)"
-                  class="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition hover:bg-white/30"
+                  class="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 backdrop-blur-sm transition hover:border-rose-300 hover:text-rose-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-200 dark:hover:border-rose-400/40 dark:hover:text-rose-300"
                 >
                   {{ favoriteIds.has(activeDocument.id) ? '❤️ 已收藏' : '🤍 收藏' }}
                 </button>
                 <button
                   @click="shareDocument(activeDocument)"
-                  class="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm transition hover:bg-white/30"
+                  class="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 backdrop-blur-sm transition hover:border-indigo-300 hover:text-indigo-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:text-indigo-300"
                 >
                   📤 分享
                 </button>
@@ -367,14 +363,14 @@ function getCategoryIcon(icon: string) {
             </div>
             
             <h2 class="mt-3 text-xl font-black">{{ activeDocument.title }}</h2>
-            <p class="mt-1 text-sm text-white/80">{{ activeDocument.subtitle }}</p>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{{ activeDocument.subtitle }}</p>
             
             <!-- 标签 -->
             <div class="mt-3 flex flex-wrap gap-2">
               <span 
                 v-for="tag in activeDocument.tags" 
                 :key="tag"
-                class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium backdrop-blur-sm"
+                class="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-300"
               >
                 {{ tag }}
               </span>
@@ -449,8 +445,7 @@ function getCategoryIcon(icon: string) {
               class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 transition hover:border-indigo-300 hover:bg-indigo-50/50 dark:border-white/10 dark:bg-white/5 dark:hover:border-indigo-500/30"
             >
               <div 
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg"
-                :class="`bg-gradient-to-br ${doc.cover_gradient}`"
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-lg dark:border-white/10 dark:bg-white/10"
               >
                 {{ getCategoryIcon(doc.cover_icon) }}
               </div>

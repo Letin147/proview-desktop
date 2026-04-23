@@ -66,46 +66,26 @@ const careerGoalSuggestions = [
 const horizonSuggestions = [3, 6, 9, 12]
 
 const targetRoleToneClasses = [
-  'border-sky-200/90 bg-sky-50/90 text-slate-800 hover:border-sky-300 hover:bg-sky-100/80 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-slate-100 dark:hover:border-sky-400/40 dark:hover:bg-sky-500/15',
-  'border-teal-200/90 bg-teal-50/90 text-slate-800 hover:border-teal-300 hover:bg-teal-100/80 dark:border-teal-500/20 dark:bg-teal-500/10 dark:text-slate-100 dark:hover:border-teal-400/40 dark:hover:bg-teal-500/15',
-  'border-cyan-200/90 bg-cyan-50/90 text-slate-800 hover:border-cyan-300 hover:bg-cyan-100/80 dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-slate-100 dark:hover:border-cyan-400/40 dark:hover:bg-cyan-500/15',
-  'border-emerald-200/90 bg-emerald-50/90 text-slate-800 hover:border-emerald-300 hover:bg-emerald-100/80 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-slate-100 dark:hover:border-emerald-400/40 dark:hover:bg-emerald-500/15',
+  'border-slate-200/90 bg-white/90 text-slate-700 hover:border-indigo-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:bg-white/10',
+  'border-slate-200/90 bg-white/90 text-slate-700 hover:border-indigo-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:bg-white/10',
+  'border-slate-200/90 bg-white/90 text-slate-700 hover:border-indigo-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:bg-white/10',
+  'border-slate-200/90 bg-white/90 text-slate-700 hover:border-indigo-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:bg-white/10',
 ]
 
 const targetRoleSelectedToneClasses = [
-  'border-sky-500 bg-sky-100 text-sky-950 shadow-[0_14px_34px_-22px_rgba(14,165,233,0.65)] dark:border-sky-300/70 dark:bg-sky-500/20 dark:text-white',
-  'border-teal-500 bg-teal-100 text-teal-950 shadow-[0_14px_34px_-22px_rgba(20,184,166,0.58)] dark:border-teal-300/70 dark:bg-teal-500/20 dark:text-white',
-  'border-cyan-500 bg-cyan-100 text-cyan-950 shadow-[0_14px_34px_-22px_rgba(6,182,212,0.58)] dark:border-cyan-300/70 dark:bg-cyan-500/20 dark:text-white',
-  'border-emerald-500 bg-emerald-100 text-emerald-950 shadow-[0_14px_34px_-22px_rgba(16,185,129,0.58)] dark:border-emerald-300/70 dark:bg-emerald-500/20 dark:text-white',
+  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
+  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
+  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
+  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
 ]
 
-const careerGoalToneClasses = [
-  'border-amber-200/90 bg-amber-50/90 text-slate-800 hover:border-amber-300 hover:bg-amber-100/80 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-slate-100 dark:hover:border-amber-400/40 dark:hover:bg-amber-500/15',
-  'border-orange-200/90 bg-orange-50/90 text-slate-800 hover:border-orange-300 hover:bg-orange-100/80 dark:border-orange-500/20 dark:bg-orange-500/10 dark:text-slate-100 dark:hover:border-orange-400/40 dark:hover:bg-orange-500/15',
-  'border-rose-200/90 bg-rose-50/90 text-slate-800 hover:border-rose-300 hover:bg-rose-100/80 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-slate-100 dark:hover:border-rose-400/40 dark:hover:bg-rose-500/15',
-  'border-lime-200/90 bg-lime-50/90 text-slate-800 hover:border-lime-300 hover:bg-lime-100/80 dark:border-lime-500/20 dark:bg-lime-500/10 dark:text-slate-100 dark:hover:border-lime-400/40 dark:hover:bg-lime-500/15',
-]
+const careerGoalToneClasses = [...targetRoleToneClasses]
 
-const careerGoalSelectedToneClasses = [
-  'border-amber-500 bg-amber-100 text-amber-950 shadow-[0_14px_34px_-22px_rgba(245,158,11,0.58)] dark:border-amber-300/70 dark:bg-amber-500/20 dark:text-white',
-  'border-orange-500 bg-orange-100 text-orange-950 shadow-[0_14px_34px_-22px_rgba(249,115,22,0.58)] dark:border-orange-300/70 dark:bg-orange-500/20 dark:text-white',
-  'border-rose-500 bg-rose-100 text-rose-950 shadow-[0_14px_34px_-22px_rgba(244,63,94,0.5)] dark:border-rose-300/70 dark:bg-rose-500/20 dark:text-white',
-  'border-lime-500 bg-lime-100 text-lime-950 shadow-[0_14px_34px_-22px_rgba(132,204,22,0.5)] dark:border-lime-300/70 dark:bg-lime-500/20 dark:text-white',
-]
+const careerGoalSelectedToneClasses = [...targetRoleSelectedToneClasses]
 
-const horizonToneClasses = [
-  'border-emerald-200/90 bg-emerald-50/90 text-slate-800 hover:border-emerald-300 hover:bg-emerald-100/80 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-slate-100 dark:hover:border-emerald-400/40 dark:hover:bg-emerald-500/15',
-  'border-teal-200/90 bg-teal-50/90 text-slate-800 hover:border-teal-300 hover:bg-teal-100/80 dark:border-teal-500/20 dark:bg-teal-500/10 dark:text-slate-100 dark:hover:border-teal-400/40 dark:hover:bg-teal-500/15',
-  'border-lime-200/90 bg-lime-50/90 text-slate-800 hover:border-lime-300 hover:bg-lime-100/80 dark:border-lime-500/20 dark:bg-lime-500/10 dark:text-slate-100 dark:hover:border-lime-400/40 dark:hover:bg-lime-500/15',
-  'border-cyan-200/90 bg-cyan-50/90 text-slate-800 hover:border-cyan-300 hover:bg-cyan-100/80 dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-slate-100 dark:hover:border-cyan-400/40 dark:hover:bg-cyan-500/15',
-]
+const horizonToneClasses = [...targetRoleToneClasses]
 
-const horizonSelectedToneClasses = [
-  'border-emerald-500 bg-emerald-100 text-emerald-950 shadow-[0_14px_34px_-22px_rgba(16,185,129,0.58)] dark:border-emerald-300/70 dark:bg-emerald-500/20 dark:text-white',
-  'border-teal-500 bg-teal-100 text-teal-950 shadow-[0_14px_34px_-22px_rgba(20,184,166,0.58)] dark:border-teal-300/70 dark:bg-teal-500/20 dark:text-white',
-  'border-lime-500 bg-lime-100 text-lime-950 shadow-[0_14px_34px_-22px_rgba(132,204,22,0.5)] dark:border-lime-300/70 dark:bg-lime-500/20 dark:text-white',
-  'border-cyan-500 bg-cyan-100 text-cyan-950 shadow-[0_14px_34px_-22px_rgba(6,182,212,0.58)] dark:border-cyan-300/70 dark:bg-cyan-500/20 dark:text-white',
-]
+const horizonSelectedToneClasses = [...targetRoleSelectedToneClasses]
 
 function pickTone(base: string[], selected: string[], index: number, active: boolean) {
   const palette = active ? selected : base
@@ -155,13 +135,13 @@ export default {
 </script>
 
 <template>
-  <section class="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-[0_25px_80px_-35px_rgba(15,23,42,0.35)] backdrop-blur dark:border-white/10 dark:bg-[#0C0F17]/90">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(79,70,229,0.18),_transparent_36%),radial-gradient(circle_at_bottom_left,_rgba(14,165,233,0.15),_transparent_30%)]"></div>
+  <section class="relative overflow-hidden rounded-3xl border border-slate-200/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(248,250,252,0.9)_100%)] p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)] backdrop-blur dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(10,10,15,0.92)_0%,rgba(12,15,23,0.94)_100%)]">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(129,140,248,0.12),_transparent_36%),radial-gradient(circle_at_bottom_left,_rgba(56,189,248,0.1),_transparent_30%)]"></div>
     <div class="relative space-y-5">
       <!-- 标题区 -->
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 rounded-full border border-indigo-200/80 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-200">
+          <div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
             <Sparkles class="h-4 w-4" />
             职业生涯规划
           </div>
@@ -174,17 +154,17 @@ export default {
         <!-- 顶部统计与操作按钮 -->
         <div class="flex flex-wrap items-center gap-3">
           <div class="grid grid-cols-3 gap-2">
-            <div class="rounded-xl border border-sky-200/80 bg-sky-50 px-3 py-2 text-center dark:border-sky-500/20 dark:bg-sky-500/10">
-              <p class="text-[10px] font-semibold uppercase text-sky-600 dark:text-sky-200">目标岗位</p>
-              <p class="mt-0.5 text-sm font-black text-sky-700 dark:text-sky-100 truncate max-w-[100px]">{{ profileData?.target_role || '未生成' }}</p>
+            <div class="rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 text-center dark:border-white/10 dark:bg-white/5">
+              <p class="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400">目标岗位</p>
+              <p class="mt-0.5 text-sm font-black text-slate-800 dark:text-slate-100 truncate max-w-[100px]">{{ profileData?.target_role || '未生成' }}</p>
             </div>
-            <div class="rounded-xl border border-amber-200/80 bg-amber-50 px-3 py-2 text-center dark:border-amber-500/20 dark:bg-amber-500/10">
-              <p class="text-[10px] font-semibold uppercase text-amber-600 dark:text-amber-200">当前阶段</p>
-              <p class="mt-0.5 text-sm font-black text-amber-700 dark:text-amber-100 truncate max-w-[100px]">{{ profileData?.current_stage || '等待分析' }}</p>
+            <div class="rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 text-center dark:border-white/10 dark:bg-white/5">
+              <p class="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400">当前阶段</p>
+              <p class="mt-0.5 text-sm font-black text-slate-800 dark:text-slate-100 truncate max-w-[100px]">{{ profileData?.current_stage || '等待分析' }}</p>
             </div>
-            <div class="rounded-xl border border-emerald-200/80 bg-emerald-50 px-3 py-2 text-center dark:border-emerald-500/20 dark:bg-emerald-500/10">
-              <p class="text-[10px] font-semibold uppercase text-emerald-600 dark:text-emerald-200">规划进度</p>
-              <p class="mt-0.5 text-sm font-black text-emerald-700 dark:text-emerald-100">{{ stats.progress_rate }}%</p>
+            <div class="rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 text-center dark:border-white/10 dark:bg-white/5">
+              <p class="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400">规划进度</p>
+              <p class="mt-0.5 text-sm font-black text-indigo-700 dark:text-indigo-300">{{ stats.progress_rate }}%</p>
             </div>
           </div>
           <div class="flex gap-2">
@@ -198,7 +178,7 @@ export default {
             <button
               @click="emit('generate')"
               :disabled="generating"
-              class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+              class="inline-flex items-center gap-2 rounded-xl border border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] px-4 py-2 text-xs font-semibold text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white"
             >
               <Rocket class="h-3.5 w-3.5" />
               {{ generating ? '生成中...' : '重新生成规划' }}
@@ -332,13 +312,13 @@ export default {
         <!-- 右侧：能力分析面板 -->
         <div class="space-y-3">
           <!-- 总体画像分数 -->
-          <div class="rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-50 to-white p-4 dark:border-indigo-500/20 dark:from-indigo-500/10 dark:to-[#0C0F17]">
+          <div class="rounded-2xl border border-slate-200/85 bg-white/85 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] dark:border-white/10 dark:bg-white/5">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-200">总体画像分数</p>
-                <p class="mt-1 text-3xl font-black text-indigo-700 dark:text-indigo-100">{{ Number(profileData?.overall_score || 0).toFixed(1) }}</p>
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">总体画像分数</p>
+                <p class="mt-1 text-3xl font-black text-slate-900 dark:text-white">{{ Number(profileData?.overall_score || 0).toFixed(1) }}</p>
               </div>
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-white shadow-lg">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white/90 text-indigo-600 dark:border-white/10 dark:bg-white/10 dark:text-indigo-300">
                 <TrendingUp class="h-5 w-5" />
               </div>
             </div>

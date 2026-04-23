@@ -48,20 +48,20 @@ function handleSelectTask(taskId: number) {
 <template>
   <section class="space-y-5">
     <!-- 页面标题区 -->
-    <div class="relative overflow-hidden rounded-3xl border border-indigo-200/40 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-500 p-6 shadow-xl shadow-indigo-500/20">
-      <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10"></div>
-      <div class="absolute -bottom-5 -right-5 h-24 w-24 rounded-full bg-white/5"></div>
+    <div class="relative overflow-hidden rounded-3xl border border-slate-200/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(248,250,252,0.9)_100%)] p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(10,10,15,0.92)_0%,rgba(12,15,23,0.94)_100%)]">
+      <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-200/20 dark:bg-indigo-400/10"></div>
+      <div class="absolute -bottom-5 -right-5 h-24 w-24 rounded-full bg-sky-200/20 dark:bg-sky-400/10"></div>
       <div class="relative flex items-center justify-between">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-white/70">✅ 任务追踪</p>
-          <h1 class="mt-2 text-3xl font-black tracking-tight text-white">把每个里程碑拆成可执行任务并持续推进</h1>
-          <p class="mt-2 max-w-xl text-sm text-white/80">聚焦当下正在做的事情，支持单个任务标记完成、推进进度和记录阶段性备注。</p>
+          <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">✅ 任务追踪</p>
+          <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">把每个里程碑拆成可执行任务并持续推进</h1>
+          <p class="mt-2 max-w-xl text-sm text-slate-600 dark:text-slate-400">聚焦当下正在做的事情，支持单个任务标记完成、推进进度和记录阶段性备注。</p>
         </div>
         <div class="hidden lg:flex items-center gap-3">
           <div class="flex -space-x-2">
-            <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-lg backdrop-blur-sm">📋</div>
-            <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-lg backdrop-blur-sm">🎯</div>
-            <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-lg backdrop-blur-sm">🚀</div>
+            <div class="h-10 w-10 rounded-full border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/10 flex items-center justify-center text-lg backdrop-blur-sm">📋</div>
+            <div class="h-10 w-10 rounded-full border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/10 flex items-center justify-center text-lg backdrop-blur-sm">🎯</div>
+            <div class="h-10 w-10 rounded-full border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/10 flex items-center justify-center text-lg backdrop-blur-sm">🚀</div>
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@ function handleSelectTask(taskId: number) {
     </div>
 
     <!-- 进度条概览 -->
-    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-white/10 dark:bg-[#0C0F17]/80">
+    <div class="rounded-2xl border border-slate-200/85 bg-white/85 p-4 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] dark:border-white/10 dark:bg-[#0C0F17]/80">
       <div class="flex items-center justify-between mb-2">
         <p class="text-sm font-semibold text-slate-700 dark:text-white">整体完成进度</p>
         <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400">{{ stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0 }}%</p>

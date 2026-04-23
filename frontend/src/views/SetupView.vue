@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ChevronDown,
@@ -183,7 +183,7 @@ const arrangementGridExpanded = ref(false)
 const arrangementPanelExpanded = ref(false)
 const launchConfigOpen = ref(false)
 const launchStepIndex = ref(0)
-const preferredArrangementPresetId = ref('')
+const preferredArrangementCardId = ref('')
 const resumeInputRef = ref<HTMLInputElement | null>(null)
 let launchTouchStartX: number | null = null
 let previewAudioCtx: AudioContext | null = null
@@ -280,9 +280,10 @@ const arrangementFallbackCard = {
 const arrangementCardId = computed({
   get: () => {
     const matches = arrangementPresetMatches.value
+    if (preferredArrangementCardId.value === 'custom') return 'custom'
     if (!matches.length) return 'custom'
-    if (preferredArrangementPresetId.value && matches.some(item => item.id === preferredArrangementPresetId.value)) {
-      return preferredArrangementPresetId.value
+    if (preferredArrangementCardId.value && matches.some(item => item.id === preferredArrangementCardId.value)) {
+      return preferredArrangementCardId.value
     }
     return matches[0]?.id || 'custom'
   },
@@ -296,10 +297,13 @@ const currentArrangementCard = computed(() => {
   return arrangementCards.value.find(card => card.id === matchedId) || arrangementCards.value[0] || arrangementFallbackCard
 })
 
+const arrangementDetailAnchorRef = ref<HTMLElement | null>(null)
+const arrangementDetailRef = ref<HTMLElement | null>(null)
+
 const hasResumeSelection = computed(() => !!store.config.resumeFile || !!store.config.resumeOcrText)
 
 const shouldShowArrangementDetail = computed(() => (
-  arrangementPanelExpanded.value || arrangementCardId.value === 'custom'
+  arrangementPanelExpanded.value
 ))
 
 const resumeStatusLabel = computed(() => {
@@ -321,17 +325,31 @@ function setStyle(value: string) {
 
 function handleArrangementSelect(id: string) {
   if (id === 'custom') {
-    arrangementPanelExpanded.value = true
+    preferredArrangementCardId.value = 'custom'
     return
   }
 
   const preset = interviewPresets.find(item => item.id === id)
   if (!preset) return
 
-  preferredArrangementPresetId.value = id
+  preferredArrangementCardId.value = id
   store.config.interviewType = preset.interviewType
   store.config.difficulty = preset.difficulty
   setStyle(preset.style)
+}
+
+function scrollToArrangementDetail() {
+  const target = arrangementDetailAnchorRef.value || arrangementDetailRef.value
+  if (!target) return
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function handleStartCustomArrangement() {
+  preferredArrangementCardId.value = 'custom'
+  arrangementPanelExpanded.value = true
+  nextTick(() => {
+    requestAnimationFrame(() => scrollToArrangementDetail())
+  })
 }
 
 function stopPreview() {
@@ -545,25 +563,42 @@ onBeforeUnmount(() => {
             :card-radius="26"
           >
             <template #card="{ item, active }">
-              <div class="setup-scenario-card" :class="item.id === 'custom' ? 'setup-scenario-card--custom' : ''">
+              <div
+                class="setup-scenario-card"
+                :class="item.id === 'custom' ? 'setup-scenario-card--custom setup-scenario-card--clickable' : ''"
+                @click="item.id === 'custom' ? handleStartCustomArrangement() : undefined"
+              >
                 <div v-if="item.id === 'custom'" class="setup-scenario-card__flare" aria-hidden="true"></div>
                 <div class="setup-scenario-card__top">
                   <div class="setup-scenario-card__avatar">{{ item.emoji }}</div>
                   <span class="setup-scenario-card__state" :class="active ? 'setup-scenario-card__state--active' : ''">
-                    {{ active ? '当前' : item.id === 'custom' ? 'Custom' : 'Preset' }}
+                    {{ active ? '当前' : item.id === 'custom' ? '自定义' : 'Preset' }}
                   </span>
                 </div>
                 <div class="setup-scenario-card__body">
-                  <p class="setup-scenario-card__kicker">{{ item.kicker }}</p>
-                  <h3 class="setup-scenario-card__title">{{ item.label }}</h3>
-                  <p class="setup-scenario-card__desc">{{ item.desc }}</p>
-                  <div class="setup-scenario-card__tags">
-                    <span class="setup-scenario-card__tag">{{ item.focus }}</span>
-                    <span class="setup-scenario-card__tag">{{ item.rhythm }}</span>
-                  </div>
-                  <div v-if="item.id === 'custom'" class="setup-scenario-card__hint">
-                    展开配置面板
-                  </div>
+                  <template v-if="item.id === 'custom'">
+                    <p class="setup-scenario-card__kicker">自定义视角</p>
+                    <h3 class="setup-scenario-card__title">场景自定义</h3>
+                    <p class="setup-scenario-card__desc">按你的目标自由组合轮次、难度与风格，快速生成专属面试场景。</p>
+                    <div class="setup-scenario-card__footer">
+                      <div class="setup-scenario-card__tags">
+                        <span class="setup-scenario-card__tag">自由组合</span>
+                        <span class="setup-scenario-card__tag">精细配置</span>
+                      </div>
+                      <span class="setup-scenario-card__hint setup-scenario-card__hint--center">
+                        点击卡片进入精细设置
+                      </span>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <p class="setup-scenario-card__kicker">{{ item.kicker }}</p>
+                    <h3 class="setup-scenario-card__title">{{ item.label }}</h3>
+                    <p class="setup-scenario-card__desc">{{ item.desc }}</p>
+                    <div class="setup-scenario-card__tags">
+                      <span class="setup-scenario-card__tag">{{ item.focus }}</span>
+                      <span class="setup-scenario-card__tag">{{ item.rhythm }}</span>
+                    </div>
+                  </template>
                 </div>
               </div>
             </template>
@@ -590,8 +625,9 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
+        <div ref="arrangementDetailAnchorRef" aria-hidden="true"></div>
         <Transition name="deck-detail">
-          <div v-if="shouldShowArrangementDetail" class="setup-arrangement-panel">
+          <div v-if="shouldShowArrangementDetail" ref="arrangementDetailRef" class="setup-arrangement-panel">
             <div class="setup-arrangement-panel__row">
               <div class="setup-arrangement-panel__block setup-arrangement-panel__block--compact">
                 <label class="config-label">面试轮次</label>
@@ -1367,6 +1403,19 @@ onBeforeUnmount(() => {
   padding-top: 0.9rem;
 }
 
+.setup-scenario-card__footer {
+  margin-top: auto;
+  padding-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.setup-scenario-card__footer .setup-scenario-card__tags {
+  margin-top: 0;
+  padding-top: 0;
+}
+
 .setup-scenario-card__tag {
   display: inline-flex;
   align-items: center;
@@ -1386,6 +1435,49 @@ onBeforeUnmount(() => {
   font-size: 0.74rem;
   font-weight: 700;
   color: #4f46e5;
+}
+
+.setup-scenario-card__hint--center {
+  width: 100%;
+  justify-content: center;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.setup-scenario-card--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.setup-scenario-card--custom.setup-scenario-card--clickable::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(56, 189, 248, 0.05), transparent 68%);
+  transition: opacity 200ms ease;
+}
+
+.setup-scenario-card--custom.setup-scenario-card--clickable:hover::before {
+  opacity: 1;
+}
+
+.setup-scenario-card--custom.setup-scenario-card--clickable:hover .setup-scenario-card__avatar {
+  border-color: rgba(129, 140, 248, 0.36);
+}
+
+.setup-scenario-card--custom.setup-scenario-card--clickable:hover .setup-scenario-card__hint {
+  color: #4338ca;
+}
+
+.dark .setup-scenario-card--custom.setup-scenario-card--clickable::before {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.18), rgba(99, 102, 241, 0.08), transparent 72%);
+}
+
+.dark .setup-scenario-card--custom.setup-scenario-card--clickable:hover .setup-scenario-card__hint {
+  color: #c4b5fd;
 }
 
 .setup-arrangement__selection {

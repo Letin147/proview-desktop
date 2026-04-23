@@ -42,10 +42,10 @@ export default {
 </script>
 
 <template>
-  <section class="rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-sm dark:border-white/10 dark:bg-[#0C0F17]/90">
+  <section class="rounded-3xl border border-slate-200/85 bg-white/90 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0C0F17]/90">
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-white shadow-lg shadow-indigo-500/30">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white/90 text-indigo-600 dark:border-white/10 dark:bg-white/10 dark:text-indigo-300">
           📋
         </div>
         <div>
@@ -53,7 +53,7 @@ export default {
           <p class="text-sm text-slate-500 dark:text-slate-400">把规划拆成具体动作，逐项完成并记录进度。</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-white/5 dark:text-slate-300">
+      <div class="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
         {{ tasks.length }} 项任务
       </div>
     </div>
@@ -64,7 +64,7 @@ export default {
         :key="task.id"
         class="group relative rounded-2xl border-2 p-4 transition-all duration-200 cursor-pointer"
         :class="selectedTaskId === task.id 
-          ? 'border-indigo-400 bg-indigo-50/50 shadow-lg shadow-indigo-100 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:shadow-none' 
+          ? 'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:shadow-none' 
           : 'border-slate-200/80 bg-white/80 hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-[#0C0F17]/80 dark:hover:border-indigo-500/30'"
         @click="emit('select-task', task.id)"
       >
@@ -161,7 +161,7 @@ export default {
             <button
               v-if="task.status !== 'completed'"
               @click.stop="emit('complete-task', task.id)"
-              class="flex items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:shadow-lg hover:shadow-indigo-500/30"
+              class="flex items-center justify-center gap-1 rounded-xl border border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] px-3 py-2 text-xs font-semibold text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] transition-all hover:shadow-[0_16px_34px_rgba(79,70,229,0.16)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white"
             >
               <CheckCircle2 class="h-3 w-3" />
               完成

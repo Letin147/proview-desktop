@@ -47,10 +47,10 @@ export default {
 </script>
 
 <template>
-  <section class="rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-sm dark:border-white/10 dark:bg-[#0C0F17]/90">
+  <section class="rounded-3xl border border-slate-200/85 bg-white/90 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0C0F17]/90">
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-white shadow-lg shadow-indigo-500/30">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white/90 text-indigo-600 dark:border-white/10 dark:bg-white/10 dark:text-indigo-300">
           <Layers3 class="h-5 w-5" />
         </div>
         <div>
@@ -58,7 +58,7 @@ export default {
           <p class="text-sm text-slate-500 dark:text-slate-400">按里程碑推进，优先完成最关键的能力补齐和作品沉淀。</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-white/5 dark:text-slate-300">
+      <div class="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
         {{ milestones.length }} 个阶段
       </div>
     </div>
@@ -66,7 +66,7 @@ export default {
     <!-- 时间轴容器 -->
     <div class="relative mt-6">
       <!-- 连接线 -->
-      <div class="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-indigo-500 via-purple-500 to-cyan-500 opacity-20 dark:opacity-30 md:hidden"></div>
+      <div class="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-slate-300 via-indigo-300 to-slate-300 opacity-40 dark:from-slate-700 dark:via-indigo-500/40 dark:to-slate-700 md:hidden"></div>
       
       <!-- 桌面端：横向三列 -->
       <div class="hidden md:grid md:grid-cols-3 gap-4">
@@ -77,7 +77,7 @@ export default {
           :class="[
             getStatusConfig(milestone.status).border,
             milestone.status === 'completed' 
-              ? 'bg-gradient-to-br from-emerald-50/50 to-white dark:from-emerald-500/10 dark:to-[#0C0F17]' 
+              ? 'bg-white/90 dark:bg-[#0C0F17]/80' 
               : 'bg-white/80 dark:bg-[#0C0F17]/80'
           ]"
         >
@@ -127,7 +127,7 @@ export default {
 
       <!-- 移动端：垂直时间轴 -->
       <div class="relative md:hidden">
-        <div class="absolute left-5 top-0 h-full w-0.5 bg-gradient-to-b from-indigo-500 via-purple-500 to-cyan-500"></div>
+        <div class="absolute left-5 top-0 h-full w-0.5 bg-gradient-to-b from-slate-300 via-indigo-300 to-slate-300 dark:from-slate-700 dark:via-indigo-500/40 dark:to-slate-700"></div>
         
         <div class="space-y-4">
           <article
@@ -137,7 +137,7 @@ export default {
             :class="[
               getStatusConfig(milestone.status).border,
               milestone.status === 'completed' 
-                ? 'bg-gradient-to-br from-emerald-50/50 to-white dark:from-emerald-500/10 dark:to-[#0C0F17]' 
+                ? 'bg-white/90 dark:bg-[#0C0F17]/80' 
                 : 'bg-white/80 dark:bg-[#0C0F17]/80'
             ]"
           >
@@ -148,7 +148,7 @@ export default {
             <div class="ml-2 flex items-start justify-between gap-3">
               <div class="flex-1 pt-1">
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                  <span class="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
                     {{ milestone.month_label }}
                   </span>
                 </div>
