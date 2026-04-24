@@ -24,6 +24,7 @@ import JobTagPicker from '../components/JobTagPicker.vue'
 import StageDeck from '../components/StageDeck.vue'
 import { fetchLatestResume, ttsPreview } from '../services/interview'
 import { isReusableOcrText } from '../utils/ocr'
+import { RESUME_UPLOAD_ACCEPT, RESUME_UPLOAD_HINT } from '../utils/resumeFile'
 
 interface ArrangementPreset {
   id: string
@@ -185,6 +186,7 @@ const launchConfigOpen = ref(false)
 const launchStepIndex = ref(0)
 const preferredArrangementCardId = ref('')
 const resumeInputRef = ref<HTMLInputElement | null>(null)
+const resumeFileError = ref('')
 let launchTouchStartX: number | null = null
 let previewAudioCtx: AudioContext | null = null
 let previewSource: AudioBufferSourceNode | null = null
@@ -479,7 +481,19 @@ async function startInterview() {
 
 function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement
-  store.setUploadedResume(input.files?.[0] || null)
+  const nextFile = input.files?.[0] || null
+  if (!nextFile) {
+    resumeFileError.value = ''
+    return
+  }
+
+  try {
+    store.setUploadedResume(nextFile)
+    resumeFileError.value = ''
+  } catch (error: any) {
+    resumeFileError.value = error?.message || '不支持的简历文件'
+    input.value = ''
+  }
 }
 
 function triggerResumePicker() {
@@ -742,7 +756,7 @@ onBeforeUnmount(() => {
             <input
               ref="resumeInputRef"
               type="file"
-              accept=".pdf,.docx,.md,.markdown,.txt,.png,.jpg,.jpeg,.bmp,.webp,.heic,.heif"
+              :accept="RESUME_UPLOAD_ACCEPT"
               class="sr-only"
               @change="onFileChange"
             />
@@ -766,7 +780,8 @@ onBeforeUnmount(() => {
               选择并上传简历
             </button>
 
-            <p class="text-helper mt-3">支持继续复用历史 OCR 简历，也可随时替换为新的本地文件。</p>
+            <p class="text-helper mt-3">支持继续复用历史 OCR 简历，也可随时替换为新的本地文件。仅支持 {{ RESUME_UPLOAD_HINT }}。</p>
+            <p v-if="resumeFileError" class="mt-2 text-xs font-medium text-red-500">{{ resumeFileError }}</p>
           </article>
         </div>
       </section>
@@ -984,9 +999,7 @@ onBeforeUnmount(() => {
                       <button
                         type="button"
                         class="setup-preview-btn inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50"
-                        :class="previewPlaying
-                          ? 'bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-500/30'
-                          : 'bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 dark:bg-primary/5 dark:text-indigo-400 dark:border-indigo-500/30 dark:hover:bg-primary/10 dark:hover:border-indigo-400/50'"
+                        :class="previewPlaying ? 'setup-preview-btn--active' : 'setup-preview-btn--idle'"
                         :disabled="previewLoading"
                         @click="playPreview"
                       >
@@ -1135,8 +1148,8 @@ onBeforeUnmount(() => {
   inset: 0;
   background:
     radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.12), transparent 28%),
-    radial-gradient(circle at 86% 14%, rgba(244, 114, 182, 0.1), transparent 24%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(248, 250, 252, 0.08));
+    radial-gradient(circle at 86% 14%, rgba(99, 102, 241, 0.1), transparent 24%),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 68%);
   pointer-events: none;
 }
 
@@ -1165,12 +1178,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.4rem;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.88);
-  background: #ffffff;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
   padding: 0.52rem 0.85rem;
   font-size: 0.76rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--ui-text-secondary);
 }
 
 .setup-hero__stats {
@@ -1188,8 +1201,8 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 0.4rem;
   border-radius: 1.4rem;
-  border: 1px solid rgba(226, 232, 240, 0.86);
-  background: rgba(248, 250, 252, 0.78);
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-2);
   padding: 1rem;
   text-align: center;
 }
@@ -1197,14 +1210,14 @@ onBeforeUnmount(() => {
 .setup-hero-stat__label {
   font-size: 0.74rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .setup-hero-stat__value {
   font-size: 2rem;
   line-height: 1;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .setup-section__head {
@@ -1221,13 +1234,13 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.5rem;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  background: #ffffff;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
   padding: 0.45rem 0.85rem;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #4f46e5;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+  color: var(--ui-accent-strong);
+  box-shadow: var(--ui-shadow-sm);
 }
 
 .setup-section__actions {
@@ -1238,7 +1251,7 @@ onBeforeUnmount(() => {
 
 .setup-section__hint {
   font-size: 0.84rem;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .setup-section__toggle,
@@ -1248,12 +1261,12 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 0.45rem;
   border-radius: 0.85rem;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: #ffffff;
+  border: 1px solid var(--ui-border-default);
+  background: var(--ui-surface-raised);
   padding: 0.72rem 0.95rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--ui-text-secondary);
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -1264,9 +1277,9 @@ onBeforeUnmount(() => {
 .setup-section__toggle:hover,
 .setup-inline-toggle:hover {
   transform: translateY(-1px);
-  border-color: rgba(129, 140, 248, 0.34);
-  color: #4338ca;
-  background: #ffffff;
+  border-color: var(--ui-border-strong);
+  color: var(--ui-accent-strong);
+  background: var(--ui-surface-1);
 }
 
 .setup-surface,
@@ -1276,14 +1289,14 @@ onBeforeUnmount(() => {
   position: relative;
   overflow: hidden;
   border-radius: 2rem;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: #ffffff;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+  border: 1px solid var(--ui-border-default);
+  background: var(--ui-surface-raised);
+  box-shadow: var(--ui-shadow-md);
 }
 
 .setup-surface {
   padding: 1.5rem 1.2rem;
-  background: #ffffff;
+  background: var(--ui-surface-1);
 }
 
 .setup-surface-card {
@@ -1320,7 +1333,7 @@ onBeforeUnmount(() => {
   width: 6.5rem;
   height: 6.5rem;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(148, 163, 184, 0.16) 0%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(circle, var(--ui-accent-soft-strong) 0%, rgba(255, 255, 255, 0) 72%);
   opacity: 0.85;
   pointer-events: none;
 }
@@ -1341,8 +1354,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  background: #ffffff;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
   font-size: 1.25rem;
 }
 
@@ -1350,18 +1363,18 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: #ffffff;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
   padding: 0.35rem 0.65rem;
   font-size: 0.68rem;
   font-weight: 700;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-scenario-card__state--active {
-  border-color: rgba(199, 210, 254, 0.96);
-  background: #ffffff;
-  color: #4338ca;
+  border-color: rgba(99, 102, 241, 0.22);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
 }
 
 .setup-scenario-card__body {
@@ -1378,21 +1391,21 @@ onBeforeUnmount(() => {
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .setup-scenario-card__title {
   margin-top: 0.45rem;
   font-size: 1.06rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .setup-scenario-card__desc {
   margin-top: 0.45rem;
   font-size: 0.8rem;
   line-height: 1.65;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-scenario-card__tags {
@@ -1420,11 +1433,11 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   border-radius: 0.5rem;
-  background: rgba(248, 250, 252, 0.95);
+  background: var(--ui-surface-3);
   padding: 0.26rem 0.5rem;
   font-size: 0.66rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-scenario-card__hint {
@@ -1434,7 +1447,7 @@ onBeforeUnmount(() => {
   padding-top: 0.85rem;
   font-size: 0.74rem;
   font-weight: 700;
-  color: #4f46e5;
+  color: var(--ui-accent-strong);
 }
 
 .setup-scenario-card__hint--center {
@@ -1953,12 +1966,38 @@ onBeforeUnmount(() => {
 .setup-preview-btn {
   flex: none;
   min-width: 10rem;
+  border-color: rgba(99, 102, 241, 0.18);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
   box-shadow: 0 10px 24px rgba(79, 70, 229, 0.08);
+}
+
+.setup-preview-btn--idle:hover:not(:disabled) {
+  border-color: rgba(99, 102, 241, 0.28);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.setup-preview-btn--active {
+  border-color: rgba(244, 63, 94, 0.2);
+  background: var(--ui-danger-soft);
+  color: var(--ui-danger);
+  box-shadow: 0 10px 24px rgba(244, 63, 94, 0.08);
 }
 
 .setup-start-card {
   padding: 1.85rem 2rem;
-  background: #ffffff;
+  background: linear-gradient(180deg, var(--ui-surface-raised) 0%, var(--ui-surface-2) 100%);
+}
+
+.setup-start-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 14% 20%, rgba(59, 130, 246, 0.12), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(99, 102, 241, 0.1), transparent 24%),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent 72%);
+  pointer-events: none;
 }
 
 .setup-start-card__orb {
@@ -1994,21 +2033,21 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  border: 1px solid rgba(199, 210, 254, 0.88);
-  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: var(--ui-accent-soft);
   padding: 0.42rem 0.8rem;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #4f46e5;
+  color: var(--ui-accent-strong);
 }
 
 .setup-start-card__title {
   margin-top: 1rem;
   font-size: clamp(1.6rem, 2vw, 2rem);
   font-weight: 800;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .setup-start-card__desc {
@@ -2016,14 +2055,14 @@ onBeforeUnmount(() => {
   margin-top: 0.75rem;
   font-size: 0.92rem;
   line-height: 1.75;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-start-card__note {
   margin-top: 0.9rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--ui-text-secondary);
 }
 
 .setup-start-card__summary {
@@ -2046,6 +2085,16 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 
+.setup-start-card__btn {
+  min-height: 4rem;
+  border-color: rgba(99, 102, 241, 0.18);
+  box-shadow: 0 18px 34px rgba(79, 70, 229, 0.16);
+}
+
+.setup-start-card__btn:hover:not(:disabled) {
+  box-shadow: 0 20px 36px rgba(79, 70, 229, 0.2);
+}
+
 .setup-launch-layer {
   position: fixed;
   inset: 0;
@@ -2054,7 +2103,7 @@ onBeforeUnmount(() => {
   align-items: flex-end;
   justify-content: stretch;
   padding: 1.4rem 1.25rem 1.1rem;
-  background: rgba(15, 23, 42, 0.08);
+  background: transparent;
 }
 
 .setup-launch-sheet {
@@ -2066,11 +2115,11 @@ onBeforeUnmount(() => {
   max-height: calc(100vh - 1rem);
   margin: 0 auto;
   border-radius: 2rem;
-  border: 1px solid rgba(226, 232, 240, 0.92);
+  border: 1px solid var(--ui-border-default);
   background: #ffffff;
   box-shadow:
-    0 20px 52px rgba(15, 23, 42, 0.12),
-    0 0 0 1px rgba(255, 255, 255, 0.6);
+    0 28px 64px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.92);
   padding: 0.95rem 1.45rem 1rem;
 }
 
@@ -2080,9 +2129,7 @@ onBeforeUnmount(() => {
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.54),
-    0 0 28px rgba(148, 163, 184, 0.16);
+  background: none;
 }
 
 .setup-launch-sheet__grabber {
@@ -2090,7 +2137,7 @@ onBeforeUnmount(() => {
   height: 0.34rem;
   margin: 0 auto 1rem;
   border-radius: 9999px;
-  background: rgba(148, 163, 184, 0.34);
+  background: rgba(148, 163, 184, 0.28);
 }
 
 .setup-launch-sheet__head {
@@ -2111,7 +2158,7 @@ onBeforeUnmount(() => {
   margin-top: 0.95rem;
   font-size: clamp(1.35rem, 2vw, 1.75rem);
   font-weight: 800;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .setup-launch-sheet__step-count {
@@ -2119,21 +2166,21 @@ onBeforeUnmount(() => {
   flex: none;
   align-items: center;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.92);
+  border: 1px solid var(--ui-border-subtle);
   background: #ffffff;
   padding: 0.48rem 0.8rem;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-launch-sheet__desc {
   margin-top: 0.45rem;
   font-size: 0.88rem;
   line-height: 1.7;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-launch-sheet__steps {
@@ -2148,7 +2195,7 @@ onBeforeUnmount(() => {
   align-items: flex-start;
   gap: 0.85rem;
   border-radius: 1.2rem;
-  border: 1px solid rgba(226, 232, 240, 0.92);
+  border: 1px solid var(--ui-border-default);
   background: #ffffff;
   padding: 0.95rem 1rem;
   text-align: left;
@@ -2161,8 +2208,8 @@ onBeforeUnmount(() => {
 
 .setup-launch-sheet__step:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: rgba(129, 140, 248, 0.26);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+  border-color: var(--ui-border-strong);
+  box-shadow: var(--ui-shadow-sm);
 }
 
 .setup-launch-sheet__step:disabled {
@@ -2172,10 +2219,11 @@ onBeforeUnmount(() => {
 }
 
 .setup-launch-sheet__step--active {
-  border-color: rgba(129, 140, 248, 0.34);
+  border-color: rgba(99, 102, 241, 0.28);
+  background: #f4f8ff;
   box-shadow:
-    0 0 0 2px rgba(129, 140, 248, 0.12),
-    0 12px 24px rgba(15, 23, 42, 0.05);
+    0 0 0 2px rgba(99, 102, 241, 0.08),
+    var(--ui-shadow-sm);
 }
 
 .setup-launch-sheet__step-index {
@@ -2186,17 +2234,17 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: rgba(248, 250, 252, 0.96);
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-3);
   font-size: 0.82rem;
   font-weight: 800;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-launch-sheet__step--active .setup-launch-sheet__step-index {
-  border-color: rgba(199, 210, 254, 0.92);
-  background: rgba(238, 242, 255, 0.94);
-  color: #4338ca;
+  border-color: rgba(99, 102, 241, 0.22);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
 }
 
 .setup-launch-sheet__step-copy {
@@ -2209,13 +2257,13 @@ onBeforeUnmount(() => {
 .setup-launch-sheet__step-label {
   font-size: 0.86rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .setup-launch-sheet__step-desc {
   font-size: 0.74rem;
   line-height: 1.5;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .setup-launch-sheet__close {
@@ -2225,9 +2273,9 @@ onBeforeUnmount(() => {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: rgba(255, 255, 255, 0.92);
-  color: #64748b;
+  border: 1px solid var(--ui-border-default);
+  background: #ffffff;
+  color: var(--ui-text-secondary);
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -2237,8 +2285,8 @@ onBeforeUnmount(() => {
 
 .setup-launch-sheet__close:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: rgba(129, 140, 248, 0.34);
-  color: #4338ca;
+  border-color: var(--ui-border-strong);
+  color: var(--ui-accent-strong);
 }
 
 .setup-launch-sheet__close:disabled {
@@ -2283,8 +2331,12 @@ onBeforeUnmount(() => {
   min-height: 0;
   max-height: 100%;
   overflow-y: auto;
+  border-color: rgba(203, 213, 225, 0.92);
+  background: #ffffff;
   padding: 1.45rem 1.45rem 1.55rem;
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
 .setup-launch-card__summary {
@@ -2294,14 +2346,14 @@ onBeforeUnmount(() => {
   gap: 1rem;
   margin-bottom: 1rem;
   padding-bottom: 0.95rem;
-  border-bottom: 1px solid rgba(241, 245, 249, 0.96);
+  border-bottom: 1px solid var(--ui-border-subtle);
 }
 
 .setup-launch-card__note {
   max-width: 34rem;
   font-size: 0.83rem;
   line-height: 1.65;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-launch-card--voice {
@@ -2339,10 +2391,10 @@ onBeforeUnmount(() => {
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.92);
+  border: 1px solid var(--ui-border-default);
   background: #ffffff;
-  color: #475569;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  color: var(--ui-text-secondary);
+  box-shadow: var(--ui-shadow-sm);
   transform: translateY(-50%);
   transition:
     transform 180ms ease,
@@ -2353,9 +2405,26 @@ onBeforeUnmount(() => {
 
 .setup-launch-stage__nav:hover:not(:disabled) {
   transform: translateY(-50%) scale(1.03);
-  border-color: rgba(129, 140, 248, 0.34);
-  color: #4338ca;
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+  border-color: var(--ui-border-strong);
+  color: var(--ui-accent-strong);
+  box-shadow: var(--ui-shadow-md);
+}
+
+.setup-launch-card .setup-inline-pill,
+.setup-launch-card .setup-role-summary,
+.setup-launch-card .setup-jd-shell__inner,
+.setup-launch-card .setup-voice-block {
+  background: #ffffff;
+}
+
+.setup-launch-card .setup-role-summary,
+.setup-launch-card .setup-jd-shell__inner,
+.setup-launch-card .setup-voice-block {
+  border-color: rgba(203, 213, 225, 0.88);
+}
+
+.setup-launch-card .config-input {
+  background: #ffffff;
 }
 
 .setup-launch-stage__nav:disabled {
@@ -2389,7 +2458,7 @@ onBeforeUnmount(() => {
 
 .setup-launch-sheet__summary {
   font-size: 0.84rem;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .setup-launch-sheet__summary-block {
@@ -2401,7 +2470,7 @@ onBeforeUnmount(() => {
 
 .setup-launch-sheet__gesture {
   font-size: 0.74rem;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .setup-launch-sheet__actions {
@@ -2413,23 +2482,23 @@ onBeforeUnmount(() => {
 
 .config-label {
   @apply mb-3 block text-sm font-bold;
-  color: #334155;
+  color: var(--ui-text-secondary);
 }
 
 .config-input {
   @apply w-full rounded-2xl border px-4 py-3 outline-none transition-all;
-  background: rgba(255, 255, 255, 0.94);
-  border-color: rgba(203, 213, 225, 0.92);
-  color: #0f172a;
+  background: var(--ui-surface-raised);
+  border-color: var(--ui-border-default);
+  color: var(--ui-text-primary);
 }
 
 .config-input::placeholder {
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .config-input:focus {
-  border-color: rgba(99, 102, 241, 0.48);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 4px var(--ui-focus-ring);
 }
 
 .chip-btn {
@@ -2437,30 +2506,30 @@ onBeforeUnmount(() => {
 }
 
 .chip-active {
-  border-color: rgba(99, 102, 241, 0.38);
-  color: #4338ca;
-  background: #ffffff;
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.12);
+  border-color: rgba(99, 102, 241, 0.22);
+  color: var(--ui-accent-strong);
+  background: var(--ui-accent-soft);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.08);
 }
 
 .chip-idle {
-  border-color: rgba(226, 232, 240, 0.92);
-  color: #475569;
-  background: rgba(255, 255, 255, 0.88);
+  border-color: var(--ui-border-default);
+  color: var(--ui-text-secondary);
+  background: var(--ui-surface-floating);
 }
 
 .chip-idle:hover {
   transform: translateY(-1px);
-  border-color: rgba(129, 140, 248, 0.28);
-  background: rgba(255, 255, 255, 0.98);
+  border-color: var(--ui-border-strong);
+  background: var(--ui-surface-raised);
 }
 
 .style-card-btn {
   @apply rounded-2xl border p-3 text-left transition-all;
   position: relative;
   overflow: hidden;
-  border-color: rgba(226, 232, 240, 0.9);
-  background: #ffffff;
+  border-color: var(--ui-border-default);
+  background: var(--ui-surface-raised);
 }
 
 .style-card-btn::before {
@@ -2468,14 +2537,15 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   opacity: 0;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(255, 255, 255, 0));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(99, 102, 241, 0.04), transparent 72%);
   transition: opacity 200ms ease;
   pointer-events: none;
 }
 
 .style-card-active {
-  border-color: rgba(129, 140, 248, 0.34);
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.12);
+  border-color: rgba(99, 102, 241, 0.26);
+  background: rgba(99, 102, 241, 0.04);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.08);
 }
 
 .style-card-active::before,
@@ -2485,29 +2555,29 @@ onBeforeUnmount(() => {
 
 .style-card-idle:hover {
   transform: translateY(-1px);
-  border-color: rgba(129, 140, 248, 0.24);
+  border-color: var(--ui-border-strong);
 }
 
 .style-card-title {
   @apply text-sm font-bold;
   position: relative;
-  color: #334155;
+  color: var(--ui-text-secondary);
 }
 
 .style-card-desc {
   @apply mt-0.5 text-xs;
   position: relative;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .text-helper {
   @apply text-xs;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .text-secondary-label {
   @apply text-sm font-semibold;
-  color: #475569;
+  color: var(--ui-text-secondary);
 }
 
 .deck-detail-enter-active,
@@ -2538,9 +2608,9 @@ onBeforeUnmount(() => {
 
 .dark .setup-hero::before {
   background:
-    radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.16), transparent 28%),
-    radial-gradient(circle at 86% 14%, rgba(244, 114, 182, 0.12), transparent 24%),
-    linear-gradient(135deg, rgba(30, 41, 59, 0.28), rgba(49, 46, 129, 0.22));
+    radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.18), transparent 28%),
+    radial-gradient(circle at 86% 14%, rgba(129, 140, 248, 0.18), transparent 24%),
+    linear-gradient(135deg, rgba(30, 41, 59, 0.24), rgba(49, 46, 129, 0.18));
 }
 
 .dark .setup-hero__meta-chip,
@@ -2606,10 +2676,17 @@ onBeforeUnmount(() => {
 
 .dark .setup-surface.setup-surface--stage :deep(.stage-deck__card) {
   border-color: rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(11, 14, 24, 0.94) 0%, rgba(8, 11, 19, 0.96) 100%);
+  background: linear-gradient(180deg, rgba(9, 11, 19, 0.992) 0%, rgba(8, 10, 18, 0.985) 100%);
   box-shadow:
     0 24px 48px rgba(0, 0, 0, 0.34),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.dark .setup-surface.setup-surface--stage :deep(.stage-deck__card::before) {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(99, 102, 241, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 26%);
+  opacity: 0.9;
 }
 
 .dark .setup-surface.setup-surface--stage :deep(.stage-deck__card-wrap:hover .stage-deck__card),
@@ -2620,9 +2697,15 @@ onBeforeUnmount(() => {
     0 0 0 1px rgba(129, 140, 248, 0.18);
 }
 
+.dark .setup-surface.setup-surface--stage :deep(.stage-deck__card-wrap--prev),
+.dark .setup-surface.setup-surface--stage :deep(.stage-deck__card-wrap--next) {
+  opacity: 0.42;
+  filter: saturate(0.68) blur(1.4px);
+}
+
 .dark .setup-surface.setup-surface--stage :deep(.stage-deck__nav) {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.82);
+  background: rgba(12, 18, 34, 0.92);
   color: #cbd5e1;
   box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
 }
@@ -2674,7 +2757,7 @@ onBeforeUnmount(() => {
 .dark .setup-role-summary__note,
 .dark .setup-start-card__desc,
 .dark .style-card-desc {
-  color: rgba(255, 255, 255, 0.44);
+  color: rgba(226, 232, 240, 0.68);
 }
 
 .dark .setup-start-card__note,
@@ -2710,21 +2793,19 @@ onBeforeUnmount(() => {
 }
 
 .dark .setup-launch-layer {
-  background: rgba(2, 6, 23, 0.22);
+  background: transparent;
 }
 
 .dark .setup-launch-sheet {
   border-color: rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(11, 14, 24, 0.98) 0%, rgba(8, 11, 19, 0.98) 100%);
+  background: #101521;
   box-shadow:
     0 -24px 72px rgba(0, 0, 0, 0.42),
     0 -1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .dark .setup-launch-sheet::before {
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 0 24px rgba(67, 56, 202, 0.14);
+  background: none;
 }
 
 .dark .setup-launch-sheet__grabber {
@@ -2735,7 +2816,7 @@ onBeforeUnmount(() => {
 .dark .setup-launch-sheet__desc,
 .dark .setup-launch-sheet__gesture,
 .dark .setup-launch-sheet__step-desc {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(226, 232, 240, 0.68);
 }
 
 .dark .setup-launch-sheet__title,
@@ -2747,17 +2828,18 @@ onBeforeUnmount(() => {
 .dark .setup-launch-sheet__step-count,
 .dark .setup-launch-stage__nav {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: #151c2b;
 }
 
 .dark .setup-launch-sheet__step:hover:not(:disabled),
 .dark .setup-launch-stage__nav:hover:not(:disabled) {
   border-color: rgba(129, 140, 248, 0.28);
-  background: rgba(255, 255, 255, 0.08);
+  background: #1a2437;
 }
 
 .dark .setup-launch-sheet__step--active {
   border-color: rgba(129, 140, 248, 0.34);
+  background: #18243a;
   box-shadow:
     0 0 0 2px rgba(129, 140, 248, 0.14),
     0 16px 30px rgba(0, 0, 0, 0.24);
@@ -2765,7 +2847,7 @@ onBeforeUnmount(() => {
 
 .dark .setup-launch-sheet__step-index {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: #131a28;
   color: #cbd5e1;
 }
 
@@ -2782,13 +2864,13 @@ onBeforeUnmount(() => {
 
 .dark .setup-launch-sheet__close {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: #151c2b;
   color: #cbd5e1;
 }
 
 .dark .setup-jd-shell__inner {
   border-color: rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
+  background: #141b29;
 }
 
 .dark .setup-jd-shell__foot,
@@ -2849,8 +2931,14 @@ onBeforeUnmount(() => {
 }
 
 .dark .setup-start-card {
+  background: linear-gradient(180deg, rgba(16, 18, 28, 0.995) 0%, rgba(9, 11, 20, 0.988) 100%);
+}
+
+.dark .setup-start-card::before {
   background:
-    linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(11, 14, 24, 0.98), rgba(49, 46, 129, 0.2));
+    radial-gradient(circle at 14% 20%, rgba(99, 102, 241, 0.14), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(59, 130, 246, 0.12), transparent 24%),
+    linear-gradient(135deg, rgba(30, 41, 59, 0.1), transparent 72%);
 }
 
 .dark .setup-start-card__orb--right {
@@ -2859,6 +2947,61 @@ onBeforeUnmount(() => {
 
 .dark .setup-start-card__orb--left {
   background: rgba(99, 102, 241, 0.16);
+}
+
+.dark .setup-preview-btn--idle {
+  border-color: rgba(129, 140, 248, 0.24);
+  background: rgba(99, 102, 241, 0.14);
+  color: #c7d2fe;
+}
+
+.dark .setup-preview-btn--idle:hover:not(:disabled) {
+  border-color: rgba(129, 140, 248, 0.34);
+  background: rgba(99, 102, 241, 0.22);
+}
+
+.dark .setup-preview-btn--active {
+  border-color: rgba(248, 113, 113, 0.24);
+  background: rgba(127, 29, 29, 0.24);
+  color: #fda4af;
+  box-shadow: 0 10px 24px rgba(127, 29, 29, 0.18);
+}
+
+.dark .setup-start-card__btn {
+  border-color: rgba(129, 140, 248, 0.22);
+  background: linear-gradient(180deg, #6b75ea 0%, #5863db 100%);
+  box-shadow: 0 18px 34px rgba(67, 56, 202, 0.24);
+}
+
+.dark .setup-start-card__btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #7280f2 0%, #5e69e2 100%);
+  box-shadow: 0 20px 36px rgba(67, 56, 202, 0.3);
+}
+
+.dark .setup-launch-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: #101521;
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.dark .setup-launch-card .setup-inline-pill,
+.dark .setup-launch-card .setup-role-summary,
+.dark .setup-launch-card .setup-jd-shell__inner,
+.dark .setup-launch-card .setup-voice-block {
+  background: #141b29;
+}
+
+.dark .setup-launch-card .setup-role-summary,
+.dark .setup-launch-card .setup-jd-shell__inner,
+.dark .setup-launch-card .setup-voice-block {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .setup-launch-card .config-input {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #0d1422;
 }
 
 @media (max-width: 960px) {

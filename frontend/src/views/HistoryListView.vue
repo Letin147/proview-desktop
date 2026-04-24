@@ -164,18 +164,17 @@ onMounted(loadHistory)
   inset: 0;
   background:
     radial-gradient(circle at 14% 20%, rgba(56, 189, 248, 0.12), transparent 28%),
-    radial-gradient(circle at 88% 18%, rgba(244, 114, 182, 0.08), transparent 22%);
+    radial-gradient(circle at 88% 18%, rgba(99, 102, 241, 0.1), transparent 22%);
   pointer-events: none;
 }
 
 .history-quota {
   min-width: 160px;
   border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
   padding: 0.95rem 1rem;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--ui-shadow-sm);
 }
 
 .history-quota__label {
@@ -183,7 +182,7 @@ onMounted(loadHistory)
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .history-quota__value {
@@ -191,13 +190,13 @@ onMounted(loadHistory)
   font-size: 1.9rem;
   line-height: 1;
   font-weight: 900;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .history-quota__sub {
   margin-top: 0.35rem;
   font-size: 0.78rem;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .history-delete {
@@ -206,7 +205,7 @@ onMounted(loadHistory)
 
 :where(.dark) .history-quota {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(15, 23, 42, 0.72);
 }
 
 :where(.dark) .history-quota__value {

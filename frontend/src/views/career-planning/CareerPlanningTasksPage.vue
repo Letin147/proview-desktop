@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { Activity, CheckCircle2, Clock3, ListTodo } from 'lucide-vue-next'
 import CareerTaskBoard from '../../components/career-planning/CareerTaskBoard.vue'
 import { useCareerPlanningStore } from '../../stores/careerPlanning'
 
@@ -46,93 +47,69 @@ function handleSelectTask(taskId: number) {
 </script>
 
 <template>
-  <section class="space-y-5">
-    <!-- 页面标题区 -->
-    <div class="relative overflow-hidden rounded-3xl border border-slate-200/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(248,250,252,0.9)_100%)] p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(10,10,15,0.92)_0%,rgba(12,15,23,0.94)_100%)]">
-      <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-200/20 dark:bg-indigo-400/10"></div>
-      <div class="absolute -bottom-5 -right-5 h-24 w-24 rounded-full bg-sky-200/20 dark:bg-sky-400/10"></div>
-      <div class="relative flex items-center justify-between">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">✅ 任务追踪</p>
-          <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">把每个里程碑拆成可执行任务并持续推进</h1>
-          <p class="mt-2 max-w-xl text-sm text-slate-600 dark:text-slate-400">聚焦当下正在做的事情，支持单个任务标记完成、推进进度和记录阶段性备注。</p>
+  <section class="career-tasks-page space-y-5">
+    <div class="career-tasks-page__hero ui-card">
+      <div>
+        <span class="ui-section-badge">任务追踪</span>
+        <h1 class="ui-page-title mt-4 text-3xl">把每个里程碑拆成可执行任务并持续推进</h1>
+        <p class="ui-page-subtitle mt-3 max-w-2xl text-sm leading-7">
+          聚焦当前正在做的事项，支持逐条记录进度、快速标记完成，并持续沉淀阶段性动作。
+        </p>
+      </div>
+
+      <div class="career-tasks-page__stats">
+        <div class="career-tasks-page__stat">
+          <div class="career-tasks-page__stat-icon">
+            <ListTodo class="h-4 w-4" />
+          </div>
+          <div>
+            <span class="career-tasks-page__stat-label">总任务</span>
+            <strong class="career-tasks-page__stat-value">{{ stats.total }}</strong>
+          </div>
         </div>
-        <div class="hidden lg:flex items-center gap-3">
-          <div class="flex -space-x-2">
-            <div class="h-10 w-10 rounded-full border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/10 flex items-center justify-center text-lg backdrop-blur-sm">📋</div>
-            <div class="h-10 w-10 rounded-full border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/10 flex items-center justify-center text-lg backdrop-blur-sm">🎯</div>
-            <div class="h-10 w-10 rounded-full border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/10 flex items-center justify-center text-lg backdrop-blur-sm">🚀</div>
+
+        <div class="career-tasks-page__stat">
+          <div class="career-tasks-page__stat-icon career-tasks-page__stat-icon--success">
+            <CheckCircle2 class="h-4 w-4" />
+          </div>
+          <div>
+            <span class="career-tasks-page__stat-label">已完成</span>
+            <strong class="career-tasks-page__stat-value">{{ stats.completed }}</strong>
+          </div>
+        </div>
+
+        <div class="career-tasks-page__stat">
+          <div class="career-tasks-page__stat-icon career-tasks-page__stat-icon--warning">
+            <Clock3 class="h-4 w-4" />
+          </div>
+          <div>
+            <span class="career-tasks-page__stat-label">进行中</span>
+            <strong class="career-tasks-page__stat-value">{{ stats.inProgress }}</strong>
+          </div>
+        </div>
+
+        <div class="career-tasks-page__stat">
+          <div class="career-tasks-page__stat-icon">
+            <Activity class="h-4 w-4" />
+          </div>
+          <div>
+            <span class="career-tasks-page__stat-label">平均进度</span>
+            <strong class="career-tasks-page__stat-value">{{ stats.avgProgress }}%</strong>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 统计概览卡片 -->
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <div class="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white p-4 shadow-sm dark:border-white/10 dark:from-[#0C0F17] dark:to-[#0C0F17]/80">
-        <div class="flex items-center gap-2">
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300">
-            📋
-          </div>
-          <div>
-            <p class="text-2xl font-black text-slate-900 dark:text-white">{{ stats.total }}</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400">总任务</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-white p-4 shadow-sm dark:border-emerald-500/20 dark:from-emerald-500/10 dark:to-[#0C0F17]">
-        <div class="flex items-center gap-2">
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300">
-            ✓
-          </div>
-          <div>
-            <p class="text-2xl font-black text-emerald-700 dark:text-emerald-100">{{ stats.completed }}</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400">已完成</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-white p-4 shadow-sm dark:border-amber-500/20 dark:from-amber-500/10 dark:to-[#0C0F17]">
-        <div class="flex items-center gap-2">
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300">
-            ⏳
-          </div>
-          <div>
-            <p class="text-2xl font-black text-amber-700 dark:text-amber-100">{{ stats.inProgress }}</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400">进行中</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-50 to-white p-4 shadow-sm dark:border-violet-500/20 dark:from-violet-500/10 dark:to-[#0C0F17]">
-        <div class="flex items-center gap-2">
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-300">
-            📊
-          </div>
-          <div>
-            <p class="text-2xl font-black text-violet-700 dark:text-violet-100">{{ stats.avgProgress }}%</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400">平均进度</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 进度条概览 -->
-    <div class="rounded-2xl border border-slate-200/85 bg-white/85 p-4 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] dark:border-white/10 dark:bg-[#0C0F17]/80">
-      <div class="flex items-center justify-between mb-2">
+    <div class="career-tasks-page__progress ui-card-soft">
+      <div class="mb-2 flex items-center justify-between">
         <p class="text-sm font-semibold text-slate-700 dark:text-white">整体完成进度</p>
-        <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400">{{ stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0 }}%</p>
+        <p class="text-sm font-bold text-indigo-600 dark:text-indigo-300">{{ stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0 }}%</p>
       </div>
-      <div class="h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-        <div 
-          class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-500"
-          :style="{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }"
-        ></div>
+      <div class="career-tasks-page__bar">
+        <div class="career-tasks-page__bar-fill" :style="{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }"></div>
       </div>
     </div>
 
-    <!-- 任务看板 -->
     <CareerTaskBoard
       :tasks="store.tasks"
       :selected-task-id="selectedTaskId"
@@ -142,3 +119,115 @@ function handleSelectTask(taskId: number) {
     />
   </section>
 </template>
+
+<style scoped>
+.career-tasks-page__hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.6rem;
+}
+
+.career-tasks-page__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.14), transparent 28%),
+    radial-gradient(circle at 88% 22%, rgba(99, 102, 241, 0.1), transparent 24%);
+  pointer-events: none;
+}
+
+.career-tasks-page__stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.career-tasks-page__stat {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
+  padding: 1rem;
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.career-tasks-page__stat-icon {
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.95rem;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--ui-accent-strong);
+  flex-shrink: 0;
+}
+
+.career-tasks-page__stat-icon--success {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--ui-success);
+}
+
+.career-tasks-page__stat-icon--warning {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--ui-warning);
+}
+
+.career-tasks-page__stat-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+
+.career-tasks-page__stat-value {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--ui-text-primary);
+}
+
+.career-tasks-page__progress {
+  padding: 1rem;
+}
+
+.career-tasks-page__bar {
+  height: 0.7rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.career-tasks-page__bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #3b82f6, #4f46e5);
+  transition: width 300ms ease;
+}
+
+.dark .career-tasks-page__stat {
+  background: rgba(15, 23, 42, 0.72);
+}
+
+@media (max-width: 960px) {
+  .career-tasks-page__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .career-tasks-page__stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

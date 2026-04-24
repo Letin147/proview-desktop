@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { FileCheck, Upload, RotateCcw, X } from 'lucide-vue-next'
+import { getResumeFileValidationError, RESUME_UPLOAD_ACCEPT, RESUME_UPLOAD_HINT } from '../utils/resumeFile'
 
 const props = defineProps<{
   visible: boolean
@@ -16,16 +17,33 @@ const emit = defineEmits<{
 const choice = ref<'keep' | 'upload'>('keep')
 const selectedFile = ref<File | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const selectionError = ref('')
 
 watch(() => props.visible, (visible) => {
   if (!visible) return
   choice.value = props.canKeepResume === false ? 'upload' : 'keep'
   selectedFile.value = null
+  selectionError.value = ''
 })
 
 function handleFileSelect(e: Event) {
   const input = e.target as HTMLInputElement
-  selectedFile.value = input.files?.[0] || null
+  const nextFile = input.files?.[0] || null
+  if (!nextFile) {
+    selectionError.value = ''
+    return
+  }
+
+  const validationError = getResumeFileValidationError(nextFile)
+  if (validationError) {
+    selectedFile.value = null
+    selectionError.value = validationError
+    input.value = ''
+    return
+  }
+
+  selectedFile.value = nextFile
+  selectionError.value = ''
 }
 
 function triggerFileInput() {
@@ -34,13 +52,14 @@ function triggerFileInput() {
 
 function handleConfirm() {
   if (choice.value === 'keep' && props.canKeepResume === false) return
-  if (choice.value === 'upload' && !selectedFile.value) return
+  if (choice.value === 'upload' && (!selectedFile.value || selectionError.value)) return
   emit('confirm', choice.value, selectedFile.value || undefined)
 }
 
 function handleCancel() {
   choice.value = 'keep'
   selectedFile.value = null
+  selectionError.value = ''
   emit('cancel')
 }
 </script>
@@ -107,16 +126,17 @@ function handleCancel() {
             <div v-if="!selectedFile" class="upload-area" @click="triggerFileInput">
               <Upload class="w-8 h-8 text-slate-400 dark:text-white/30 mb-2" />
               <p class="text-sm text-slate-500 dark:text-white/50">点击选择文件</p>
-              <p class="text-xs text-slate-400 dark:text-white/30 mt-0.5">PDF / DOCX / MD / TXT / 图片</p>
-              <input ref="fileInputRef" type="file" accept=".pdf,.docx,.md,.markdown,.txt,.png,.jpg,.jpeg,.bmp,.webp,.heic,.heif" class="hidden" @change="handleFileSelect" />
+              <p class="text-xs text-slate-400 dark:text-white/30 mt-0.5">{{ RESUME_UPLOAD_HINT }}</p>
+              <input ref="fileInputRef" type="file" :accept="RESUME_UPLOAD_ACCEPT" class="hidden" @change="handleFileSelect" />
             </div>
             <div v-else class="file-selected">
               <FileCheck class="w-5 h-5 text-green-500 shrink-0" />
               <span class="text-sm text-slate-700 dark:text-white/80 truncate flex-1">{{ selectedFile.name }}</span>
-              <button @click="selectedFile = null" class="text-slate-400 hover:text-red-500 transition">
+              <button @click="selectedFile = null; selectionError = ''" class="text-slate-400 hover:text-red-500 transition">
                 <X class="w-4 h-4" />
               </button>
             </div>
+            <p v-if="selectionError" class="mt-2 text-xs font-medium text-red-500">{{ selectionError }}</p>
           </div>
         </div>
 

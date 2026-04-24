@@ -144,12 +144,12 @@ function retry() {
           <span class="ui-section-badge">评估报告</span>
           <h2 class="ui-page-title mt-4 text-3xl">面试评估报告</h2>
           <p class="ui-page-subtitle mt-2 font-medium">{{ jobTitle }} · {{ styleLabel }}</p>
-          <p class="mt-3 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
+          <p class="report-hero__meta mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold">
             本次面试共进行了 {{ turnCount }} 轮对话
           </p>
         </div>
         <button @click="retry"
-          class="ui-btn ui-btn-secondary mt-1 px-6 py-3">
+          class="ui-btn ui-btn-secondary report-hero__action mt-1 px-6 py-3">
           <RotateCcw class="w-4 h-4" /> {{ isHistoryMode ? '返回详情' : '重新挑战' }}
         </button>
       </div>
@@ -162,7 +162,7 @@ function retry() {
         <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{{ evalSummary }}</p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <!-- 综合得分 + 各维度 -->
         <div class="lg:col-span-1 space-y-6">
           <div class="report-score-card ui-card flex flex-col items-center justify-center p-8 text-center">
@@ -189,12 +189,12 @@ function retry() {
         </div>
 
         <!-- 优势 + 不足 -->
-        <div class="lg:col-span-2 grid grid-cols-1 gap-6">
+        <div class="report-insights lg:col-span-2">
           <div class="report-insight report-insight--good rounded-[28px] p-6">
             <h3 class="font-bold text-emerald-800 dark:text-emerald-400 text-lg mb-3 flex items-center gap-2">
               <CheckCircle2 class="w-5 h-5" /> 优势亮点
             </h3>
-            <p class="text-emerald-900 dark:text-emerald-300/80 text-sm leading-relaxed">
+            <p class="report-insight__body text-sm leading-relaxed">
               {{ evalStrengths || (isHistoryMode ? '暂无数据' : '面试评估生成中...') }}
             </p>
           </div>
@@ -202,7 +202,7 @@ function retry() {
             <h3 class="font-bold text-amber-800 dark:text-amber-400 text-lg mb-3 flex items-center gap-2">
               <AlertTriangle class="w-5 h-5" /> 改进建议
             </h3>
-            <p class="text-amber-900 dark:text-amber-300/80 text-sm leading-relaxed">
+            <p class="report-insight__body text-sm leading-relaxed">
               {{ evalWeaknesses || (isHistoryMode ? '暂无数据' : '面试评估生成中...') }}
             </p>
           </div>
@@ -225,21 +225,39 @@ function retry() {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 14% 20%, rgba(56, 189, 248, 0.12), transparent 28%),
-    radial-gradient(circle at 88% 16%, rgba(244, 114, 182, 0.1), transparent 24%);
+    radial-gradient(circle at 14% 20%, rgba(59, 130, 246, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 16%, rgba(99, 102, 241, 0.1), transparent 24%);
   pointer-events: none;
+}
+
+.report-hero__meta {
+  position: relative;
+  z-index: 1;
+  color: var(--ui-accent-strong);
+  background: var(--ui-accent-soft);
+  border: 1px solid var(--ui-border-subtle);
+}
+
+.report-hero__action {
+  position: relative;
+  z-index: 1;
 }
 
 .report-summary {
   position: relative;
   overflow: hidden;
+  border-color: var(--ui-border-default);
+  background:
+    linear-gradient(180deg, var(--ui-surface-raised) 0%, var(--ui-surface-2) 100%);
 }
 
 .report-summary::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(239, 246, 255, 0.32), rgba(245, 243, 255, 0.22), transparent 70%);
+  background:
+    radial-gradient(circle at 14% 20%, rgba(59, 130, 246, 0.12), transparent 26%),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(99, 102, 241, 0.04), transparent 70%);
   pointer-events: none;
 }
 
@@ -250,37 +268,97 @@ function retry() {
 .report-dimension-row {
   padding: 0.8rem 0.9rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.54);
-  border: 1px solid rgba(226, 232, 240, 0.82);
+  background: var(--ui-surface-2);
+  border: 1px solid var(--ui-border-default);
+}
+
+.report-insights {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-content: start;
+  align-self: start;
 }
 
 .report-insight {
+  position: relative;
+  overflow: hidden;
   border: 1px solid transparent;
+  background: linear-gradient(180deg, var(--ui-surface-raised) 0%, var(--ui-surface-1) 100%);
   box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
+}
+
+.report-insight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.report-insight__body {
+  position: relative;
+  z-index: 1;
+  color: var(--ui-text-secondary);
 }
 
 .report-insight--good {
   border-color: rgba(16, 185, 129, 0.18);
-  background: linear-gradient(180deg, rgba(236, 253, 245, 0.94) 0%, rgba(240, 253, 250, 0.9) 100%);
+}
+
+.report-insight--good::before {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(16, 185, 129, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(16, 185, 129, 0.06), transparent 76%);
 }
 
 .report-insight--warn {
   border-color: rgba(245, 158, 11, 0.18);
-  background: linear-gradient(180deg, rgba(255, 251, 235, 0.94) 0%, rgba(255, 247, 237, 0.9) 100%);
+}
+
+.report-insight--warn::before {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(245, 158, 11, 0.14), transparent 28%),
+    linear-gradient(180deg, rgba(245, 158, 11, 0.05), transparent 76%);
 }
 
 .dark .report-dimension-row {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .report-summary {
+  background:
+    linear-gradient(180deg, rgba(19, 20, 28, 0.96) 0%, rgba(10, 11, 20, 0.92) 100%);
+}
+
+.dark .report-summary::before {
+  background:
+    radial-gradient(circle at 14% 20%, rgba(99, 102, 241, 0.14), transparent 28%),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.06), transparent 70%);
+}
+
+.dark .report-insight__body {
+  color: rgba(226, 232, 240, 0.82);
 }
 
 .dark .report-insight--good {
-  border-color: rgba(16, 185, 129, 0.22);
-  background: linear-gradient(180deg, rgba(6, 78, 59, 0.26) 0%, rgba(2, 44, 34, 0.3) 100%);
+  border-color: rgba(16, 185, 129, 0.18);
+}
+
+.dark .report-insight--good::before {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(16, 185, 129, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(16, 185, 129, 0.06), transparent 78%);
 }
 
 .dark .report-insight--warn {
-  border-color: rgba(245, 158, 11, 0.22);
-  background: linear-gradient(180deg, rgba(120, 53, 15, 0.28) 0%, rgba(69, 26, 3, 0.3) 100%);
+  border-color: rgba(245, 158, 11, 0.18);
+}
+
+.dark .report-insight--warn::before {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(245, 158, 11, 0.14), transparent 30%),
+    linear-gradient(180deg, rgba(245, 158, 11, 0.05), transparent 78%);
 }
 </style>

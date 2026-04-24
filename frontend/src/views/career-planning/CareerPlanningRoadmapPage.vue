@@ -10,44 +10,126 @@ const progressPercent = computed(() => store.milestones.length ? Math.round((com
 </script>
 
 <template>
-  <section class="space-y-5">
-    <!-- 页面标题区 -->
-    <div class="relative overflow-hidden rounded-3xl border border-slate-200/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(248,250,252,0.9)_100%)] p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(10,10,15,0.92)_0%,rgba(12,15,23,0.94)_100%)]">
-      <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-200/20 dark:bg-indigo-400/10"></div>
-      <div class="absolute -bottom-5 -right-5 h-24 w-24 rounded-full bg-sky-200/20 dark:bg-sky-400/10"></div>
-      <div class="relative flex items-center justify-between">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">🗺️ 路线图</p>
-          <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">按阶段展开目标、里程碑和预期结果</h1>
-          <p class="mt-2 max-w-xl text-sm text-slate-600 dark:text-slate-400">这是一条从当前状态到目标岗位的线性路线，适合快速检查每一阶段是否已经按计划推进。</p>
+  <section class="career-roadmap-page space-y-5">
+    <div class="career-roadmap-page__hero ui-card">
+      <div>
+        <span class="ui-section-badge">路线图</span>
+        <h1 class="ui-page-title mt-4 text-3xl">按阶段展开目标、里程碑和预期结果</h1>
+        <p class="ui-page-subtitle mt-3 max-w-2xl text-sm leading-7">
+          这是一条从当前状态推进到目标岗位的阶段路线，适合快速检查每个阶段是否已经按计划完成。
+        </p>
+      </div>
+
+      <div class="career-roadmap-page__stats">
+        <div class="career-roadmap-page__stat">
+          <span class="career-roadmap-page__stat-label">阶段数</span>
+          <strong class="career-roadmap-page__stat-value">{{ store.milestones.length }}</strong>
         </div>
-        <div class="hidden lg:flex items-center gap-4">
-          <div class="text-center">
-            <p class="text-3xl font-black text-slate-900 dark:text-white">{{ completedCount }}/{{ store.milestones.length }}</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400">已完成阶段</p>
-          </div>
-          <div class="h-12 w-12 rounded-full border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/10 flex items-center justify-center">
-            <span class="text-xl text-indigo-600 dark:text-indigo-300">📍</span>
-          </div>
+        <div class="career-roadmap-page__stat">
+          <span class="career-roadmap-page__stat-label">已完成</span>
+          <strong class="career-roadmap-page__stat-value">{{ completedCount }}</strong>
+        </div>
+        <div class="career-roadmap-page__stat">
+          <span class="career-roadmap-page__stat-label">整体进度</span>
+          <strong class="career-roadmap-page__stat-value">{{ progressPercent }}%</strong>
         </div>
       </div>
     </div>
 
-    <!-- 进度概览 -->
-    <div class="rounded-2xl border border-slate-200/85 bg-white/85 p-4 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] dark:border-white/10 dark:bg-[#0C0F17]/80">
-      <div class="flex items-center justify-between mb-2">
+    <div class="career-roadmap-page__progress ui-card-soft">
+      <div class="mb-2 flex items-center justify-between">
         <p class="text-sm font-semibold text-slate-700 dark:text-white">整体进度</p>
-        <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400">{{ progressPercent }}%</p>
+        <p class="text-sm font-bold text-indigo-600 dark:text-indigo-300">{{ progressPercent }}%</p>
       </div>
-      <div class="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-        <div 
-          class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 transition-all duration-500"
-          :style="{ width: `${progressPercent}%` }"
-        ></div>
+      <div class="career-roadmap-page__bar">
+        <div class="career-roadmap-page__bar-fill" :style="{ width: `${progressPercent}%` }"></div>
       </div>
     </div>
 
-    <!-- 路线图面板 -->
     <CareerRoadmapPanel :milestones="store.milestones" />
   </section>
 </template>
+
+<style scoped>
+.career-roadmap-page__hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.8fr);
+  gap: 1.1rem;
+  padding: 1.6rem;
+}
+
+.career-roadmap-page__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.14), transparent 28%),
+    radial-gradient(circle at 88% 20%, rgba(99, 102, 241, 0.12), transparent 24%);
+  pointer-events: none;
+}
+
+.career-roadmap-page__stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: end;
+}
+
+.career-roadmap-page__stat {
+  border-radius: 1.2rem;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
+  padding: 1rem;
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.career-roadmap-page__stat-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+
+.career-roadmap-page__stat-value {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--ui-text-primary);
+}
+
+.career-roadmap-page__progress {
+  padding: 1rem;
+}
+
+.career-roadmap-page__bar {
+  height: 0.7rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.career-roadmap-page__bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #3b82f6, #4f46e5);
+  transition: width 300ms ease;
+}
+
+.dark .career-roadmap-page__stat {
+  background: rgba(15, 23, 42, 0.72);
+}
+
+@media (max-width: 960px) {
+  .career-roadmap-page__hero,
+  .career-roadmap-page__stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

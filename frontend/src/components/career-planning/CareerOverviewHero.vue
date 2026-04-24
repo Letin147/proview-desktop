@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RefreshCcw, Rocket, Sparkles, TrendingUp } from 'lucide-vue-next'
+import { BarChart3, RefreshCcw, Rocket, ShieldCheck, Sparkles, Target, TrendingUp } from 'lucide-vue-next'
 import type { CareerDashboardStats, CareerProfile } from '../../types/career-planning'
 import { useCareerPlanningStore } from '../../stores/careerPlanning'
 
@@ -73,10 +73,10 @@ const targetRoleToneClasses = [
 ]
 
 const targetRoleSelectedToneClasses = [
-  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
-  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
-  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
-  'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white',
+  'border-indigo-300 bg-sky-50/84 text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-indigo-500/14 dark:text-white',
+  'border-indigo-300 bg-sky-50/84 text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-indigo-500/14 dark:text-white',
+  'border-indigo-300 bg-sky-50/84 text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-indigo-500/14 dark:text-white',
+  'border-indigo-300 bg-sky-50/84 text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-indigo-500/14 dark:text-white',
 ]
 
 const careerGoalToneClasses = [...targetRoleToneClasses]
@@ -178,7 +178,7 @@ export default {
             <button
               @click="emit('generate')"
               :disabled="generating"
-              class="inline-flex items-center gap-2 rounded-xl border border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] px-4 py-2 text-xs font-semibold text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white"
+              class="inline-flex items-center gap-2 rounded-xl border border-indigo-300 bg-sky-50 px-4 py-2 text-xs font-semibold text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 dark:border-indigo-400/40 dark:bg-indigo-500/14 dark:text-white"
             >
               <Rocket class="h-3.5 w-3.5" />
               {{ generating ? '生成中...' : '重新生成规划' }}
@@ -333,16 +333,16 @@ export default {
               </div>
               <div class="flex-1 rounded-xl bg-white/80 p-2 text-center dark:bg-[#0B1220]">
                 <p class="text-[10px] text-slate-500">完成率</p>
-                <p class="mt-0.5 text-sm font-bold text-emerald-600">{{ stats.progress_rate }}%</p>
+                <p class="mt-0.5 text-sm font-bold text-indigo-600 dark:text-indigo-300">{{ stats.progress_rate }}%</p>
               </div>
             </div>
           </div>
 
           <!-- 优势能力 -->
-          <div class="rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50/80 to-white p-3 dark:border-emerald-500/20 dark:from-emerald-500/10 dark:to-[#0C0F17]">
+          <div class="rounded-2xl border border-slate-200/80 bg-white/84 p-3 dark:border-white/10 dark:bg-white/5">
             <div class="flex items-center gap-2 mb-2">
-              <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300">
-                💪
+              <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-100 text-sky-600 dark:bg-sky-500/20 dark:text-sky-300">
+                <ShieldCheck class="h-4 w-4" />
               </div>
               <p class="text-xs font-bold text-slate-700 dark:text-white">优势能力</p>
             </div>
@@ -350,7 +350,7 @@ export default {
               <span 
                 v-for="tag in strengthTags" 
                 :key="tag"
-                class="rounded-full px-2 py-0.5 text-[10px] font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
+                class="rounded-full px-2 py-0.5 text-[10px] font-medium bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300"
               >
                 {{ tag }}
               </span>
@@ -359,10 +359,10 @@ export default {
           </div>
 
           <!-- 待提升项 -->
-          <div class="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/80 to-white p-3 dark:border-amber-500/20 dark:from-amber-500/10 dark:to-[#0C0F17]">
+          <div class="rounded-2xl border border-slate-200/80 bg-white/84 p-3 dark:border-white/10 dark:bg-white/5">
             <div class="flex items-center gap-2 mb-2">
               <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300">
-                🎯
+                <Target class="h-4 w-4" />
               </div>
               <p class="text-xs font-bold text-slate-700 dark:text-white">待提升项</p>
             </div>
@@ -382,7 +382,7 @@ export default {
           <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-3 dark:border-white/10 dark:bg-white/5">
             <div class="flex items-center gap-2 mb-2">
               <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300">
-                📊
+                <BarChart3 class="h-4 w-4" />
               </div>
               <p class="text-xs font-bold text-slate-700 dark:text-white">数据摘要</p>
             </div>
@@ -393,7 +393,7 @@ export default {
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">已完成任务</span>
-                <span class="font-semibold text-emerald-600">{{ store.stats.completed_task_count }} 个</span>
+                <span class="font-semibold text-sky-600 dark:text-sky-300">{{ store.stats.completed_task_count }} 个</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">当前活跃</span>

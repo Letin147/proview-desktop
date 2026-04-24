@@ -161,9 +161,9 @@ onMounted(async () => {
       <div v-if="detail.stats?.evaluations?.length" class="mb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         <div v-for="ev in detail.stats.evaluations" :key="ev.dimension"
           class="detail-score-card flex flex-col items-center gap-1 p-3 rounded-2xl">
-          <ScoreCircle :score="ev.score" />
-          <span class="text-xs font-medium text-slate-600 dark:text-white/60">{{ ev.dimension }}</span>
-          <span v-if="ev.comment && !ev.comment.includes('待 AI')" class="text-[10px] text-slate-400 dark:text-white/30 text-center leading-tight">{{ ev.comment }}</span>
+          <ScoreCircle :score="ev.score" compact />
+          <span class="detail-score-card__title text-xs font-medium">{{ ev.dimension }}</span>
+          <span v-if="ev.comment && !ev.comment.includes('待 AI')" class="detail-score-card__comment text-[10px] text-center leading-tight">{{ ev.comment }}</span>
         </div>
       </div>
 
@@ -234,9 +234,17 @@ onMounted(async () => {
 }
 
 .detail-score-card {
-  border: 1px solid rgba(226, 232, 240, 0.85);
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--ui-border-default);
+  background: linear-gradient(180deg, var(--ui-surface-raised) 0%, var(--ui-surface-2) 100%);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.detail-score-card__title {
+  color: var(--ui-text-secondary);
+}
+
+.detail-score-card__comment {
+  color: var(--ui-text-muted);
 }
 
 .detail-chat-wrap {
@@ -259,7 +267,9 @@ onMounted(async () => {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(239, 246, 255, 0.24), rgba(245, 243, 255, 0.2), transparent 70%);
+  background:
+    radial-gradient(circle at 14% 20%, rgba(59, 130, 246, 0.12), transparent 24%),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(99, 102, 241, 0.05), transparent 70%);
   pointer-events: none;
 }
 
@@ -309,7 +319,21 @@ onMounted(async () => {
 
 :where(.dark) .detail-score-card {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: linear-gradient(180deg, rgba(19, 20, 28, 0.96) 0%, rgba(10, 11, 20, 0.92) 100%);
+}
+
+:where(.dark) .detail-score-card__title {
+  color: rgba(226, 232, 240, 0.84);
+}
+
+:where(.dark) .detail-score-card__comment {
+  color: rgba(148, 163, 184, 0.72);
+}
+
+:where(.dark) .detail-retry::before {
+  background:
+    radial-gradient(circle at 14% 20%, rgba(99, 102, 241, 0.14), transparent 24%),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.06), transparent 72%);
 }
 
 :where(.dark) .detail-retry--busy {

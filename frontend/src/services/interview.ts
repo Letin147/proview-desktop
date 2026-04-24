@@ -11,6 +11,7 @@ import type {
 import { fetchSSE, type SSECallbacks } from './sse'
 import { normalizeJobTitle, normalizeSessionDetail, normalizeSessionListItem } from '../utils/jobTitle'
 import { buildApiUrl } from './runtimeConfig'
+import { assertValidResumeFile } from '../utils/resumeFile'
 
 export interface HealthStatus {
   status: string
@@ -37,6 +38,7 @@ export async function setupInterview(config: InterviewConfig): Promise<SetupResp
     formData.append('job_requirements', config.jobRequirements.trim())
   }
   if (config.resumeFile) {
+    assertValidResumeFile(config.resumeFile)
     formData.append('resume', config.resumeFile)
   } else if (config.resumeOcrText) {
     formData.append('resume_ocr_text', config.resumeOcrText)
@@ -119,11 +121,30 @@ export interface ResumeRecord {
   preview_image_urls?: string[]
 }
 
+function normalizeResumeAssetUrl(value?: string): string {
+  const normalized = typeof value === 'string' ? value.trim() : ''
+  if (!normalized) return ''
+  if (/^(https?:|file:|data:|blob:)/i.test(normalized)) {
+    return normalized
+  }
+  return buildApiUrl(normalized.startsWith('/') ? normalized : `/${normalized}`)
+}
+
+function normalizeResumeRecord(record: ResumeRecord): ResumeRecord {
+  return {
+    ...record,
+    preview_cover_url: normalizeResumeAssetUrl(record.preview_cover_url),
+    preview_image_urls: Array.isArray(record.preview_image_urls)
+      ? record.preview_image_urls.map((url) => normalizeResumeAssetUrl(url)).filter(Boolean)
+      : [],
+  }
+}
+
 /** 获取当前用户的所有简历列表 */
 export async function fetchMyResumes(): Promise<ResumeRecord[]> {
   try {
     const { data } = await api.get<ResumeRecord[]>('/api/my-resumes')
-    return data
+    return Array.isArray(data) ? data.map(normalizeResumeRecord) : []
   } catch {
     return []
   }
@@ -193,6 +214,7 @@ export async function setupInterviewStream(
     formData.append('job_requirements', config.jobRequirements.trim())
   }
   if (config.resumeFile) {
+    assertValidResumeFile(config.resumeFile)
     formData.append('resume', config.resumeFile)
   } else if (config.resumeOcrText) {
     formData.append('resume_ocr_text', config.resumeOcrText)

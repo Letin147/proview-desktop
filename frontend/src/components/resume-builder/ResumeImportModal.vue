@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { Upload, FileText, Loader, CheckCircle, XCircle, AlertCircle } from 'lucide-vue-next'
 import { useResumeImportStore } from '../../stores/resumeImport'
+import { getResumeFileValidationError, RESUME_UPLOAD_ACCEPT, RESUME_UPLOAD_HINT } from '../../utils/resumeFile'
 
 const emit = defineEmits<{
   success: []
@@ -11,6 +12,7 @@ const emit = defineEmits<{
 const importStore = useResumeImportStore()
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
+const selectionError = ref('')
 
 // 进度状态映射
 const progressSteps = computed(() => {
@@ -41,17 +43,39 @@ const statusConfig = computed(() => {
 
 function handleFileSelect(event: Event) {
   const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (file) {
-    selectedFile.value = file
+  const nextFile = input.files?.[0] || null
+  if (!nextFile) {
+    selectionError.value = ''
+    return
   }
+
+  const validationError = getResumeFileValidationError(nextFile)
+  if (validationError) {
+    selectedFile.value = null
+    selectionError.value = validationError
+    input.value = ''
+    return
+  }
+
+  selectedFile.value = nextFile
+  selectionError.value = ''
 }
 
 function handleFileDrop(event: DragEvent) {
-  const file = event.dataTransfer?.files?.[0]
-  if (file) {
-    selectedFile.value = file
+  const nextFile = event.dataTransfer?.files?.[0] || null
+  if (!nextFile) {
+    return
   }
+
+  const validationError = getResumeFileValidationError(nextFile)
+  if (validationError) {
+    selectedFile.value = null
+    selectionError.value = validationError
+    return
+  }
+
+  selectedFile.value = nextFile
+  selectionError.value = ''
 }
 
 function triggerFileInput() {
@@ -75,6 +99,7 @@ async function startImport() {
 function cancel() {
   importStore.resetImportState()
   selectedFile.value = null
+  selectionError.value = ''
   emit('cancel')
 }
 </script>
@@ -99,16 +124,16 @@ function cancel() {
           @drop.prevent="handleFileDrop"
         >
           <component :is="statusConfig.icon" :class="['upload-icon', statusConfig.color]" />
-          <p class="upload-text">点击选择或拖拽文件到此处</p>
-          <p class="upload-hint">支持 PDF、DOCX、Markdown、TXT、图片格式</p>
-          <input
-            ref="fileInputRef"
-            type="file"
-            accept=".pdf,.docx,.md,.markdown,.txt,.png,.jpg,.jpeg,.bmp,.webp,.heic,.heif"
-            class="hidden"
-            @change="handleFileSelect"
-          />
-        </div>
+            <p class="upload-text">点击选择或拖拽文件到此处</p>
+            <p class="upload-hint">支持 {{ RESUME_UPLOAD_HINT }}</p>
+            <input
+              ref="fileInputRef"
+              type="file"
+              :accept="RESUME_UPLOAD_ACCEPT"
+              class="hidden"
+              @change="handleFileSelect"
+            />
+          </div>
 
         <!-- 已选择文件 -->
         <div v-else class="file-selected">
@@ -119,11 +144,16 @@ function cancel() {
           </div>
           <button
             v-if="importStore.importProgress === 'idle'"
-            @click="selectedFile = null"
+            @click="selectedFile = null; selectionError = ''"
             class="file-remove"
           >
             <XCircle class="w-4 h-4" />
           </button>
+        </div>
+
+        <div v-if="selectionError" class="error-detail">
+          <AlertCircle class="w-4 h-4 text-red-500" />
+          <span>{{ selectionError }}</span>
         </div>
 
         <!-- 进度指示器 -->

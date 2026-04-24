@@ -141,7 +141,7 @@ const profileFields: FieldMeta[] = [
     key: 'LOCAL_USER_NAME',
     label: '本机用户名',
     placeholder: '例如：张三 / 前端调试机',
-    description: '单机模式下显示在界面右上角、历史记录和本地工作区中的名称。',
+    description: '当前应用会在界面右上角、历史记录和本地工作区中显示这个名称。',
   },
 ]
 
@@ -265,7 +265,7 @@ const settingsPanelFallback = {
   indicator: '',
 }
 
-const guideAsset = (filename: string) => `/runtime-guides/${filename}`
+const guideAsset = (filename: string) => `${import.meta.env.BASE_URL}runtime-guides/${filename}`
 
 const settingsGuideMap: Record<SettingsPanelId, GuidePanel> = {
   identity: {
@@ -276,7 +276,7 @@ const settingsGuideMap: Record<SettingsPanelId, GuidePanel> = {
       {
         id: 'entry',
         title: '从左下角进入应用设置',
-        caption: '首次使用时，先在左下角找到“应用设置”入口，进入单机版运行时配置页。',
+        caption: '首次使用时，先在左下角找到“应用设置”入口，进入运行时配置页。',
         image: guideAsset('a34a74a26bdc69786975818666062ea.png'),
         alt: '应用设置入口引导图',
         fields: ['应用设置入口'],
@@ -299,7 +299,7 @@ const settingsGuideMap: Record<SettingsPanelId, GuidePanel> = {
       },
     ],
     tips: [
-      '单机版默认不需要登录，本机用户名会显示在右上角和本地工作区。',
+      '当前应用默认不需要登录，本机用户名会显示在右上角和本地工作区。',
       '前端 API_URL 保存后会立即影响后续请求入口。',
       '如果当前后端未连通，页面仍然会先保存 API_URL 到本地。',
     ],
@@ -404,7 +404,7 @@ const settingsGuideMap: Record<SettingsPanelId, GuidePanel> = {
 }
 
 const settingsNotes = [
-  '单机版默认使用当前设备上的一个本地用户，不再需要登录或注册。',
+  '当前应用默认使用当前设备上的一个本地用户，不再需要登录或注册。',
   '前端 API_URL 存在浏览器本地存储里，修改后新的请求会立刻走新地址。',
   '模型与 OCR 密钥会写入后端运行时 .env，后端会同步刷新可用模型列表。',
   '如果你想恢复默认开发模式，把前端 API_URL 清空即可。',
@@ -427,7 +427,7 @@ const canNextGuideStep = computed(() => {
 
 const runtimeOverviewItems = computed(() => [
   { label: '本机用户', value: form.LOCAL_USER_NAME || '本地用户' },
-  { label: 'Env File', value: envFilePath.value || '未读取到' },
+  { label: '环境文件', value: envFilePath.value || '未读取到' },
   { label: '后端配置', value: backendConfigLoaded.value ? '已加载后端配置' : '当前未连通后端' },
   { label: '已配置密钥', value: String(configuredSecretCount.value) },
 ])
@@ -584,15 +584,15 @@ onMounted(() => {
 <template>
   <div class="settings-shell mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
     <section class="settings-hero">
-      <div class="settings-hero__copy">
-        <div class="settings-hero__badge">
-          <Settings class="h-3.5 w-3.5" />
-          Application Settings
-        </div>
-        <h1>应用设置工作台</h1>
-        <p>
-          这里是单机版的统一设置入口。保留现有配置字段、保存逻辑和 API 探测逻辑，只把填写流程重构成“前面先看运行状态、下面再按步骤填写、教程按需弹出查看”的工作台。
-        </p>
+        <div class="settings-hero__copy">
+          <div class="settings-hero__badge">
+            <Settings class="h-3.5 w-3.5" />
+            应用设置
+          </div>
+          <h1>应用设置工作台</h1>
+          <p>
+            这里是当前应用的统一设置入口。保留现有配置字段、保存逻辑和 API 探测逻辑，只把填写流程重构成“前面先看运行状态、下面再按步骤填写、教程按需弹出查看”的工作台。
+          </p>
         <div class="settings-hero__meta">
           <span class="settings-hero__meta-chip">
             <Waypoints class="h-4 w-4 text-sky-500" />
@@ -615,13 +615,13 @@ onMounted(() => {
     </section>
 
     <div class="mt-8">
-      <section class="settings-workbench">
-        <div class="settings-workbench__top">
-          <div>
-            <p class="settings-section-eyebrow">Edit Deck</p>
-            <h2>配置编辑台</h2>
-            <p>保留原有字段、保存逻辑和 API 探测逻辑，把当前配置面板重构成“左侧填写、右侧看图引导、下方看运行状态”的单工作台布局。</p>
-          </div>
+        <section class="settings-workbench">
+          <div class="settings-workbench__top">
+            <div>
+              <p class="settings-section-eyebrow">配置编辑台</p>
+              <h2>配置编辑台</h2>
+              <p>保留原有字段、保存逻辑和 API 探测逻辑，把当前配置面板重构成“左侧填写、右侧看图引导、下方看运行状态”的单工作台布局。</p>
+            </div>
           <button type="button" class="settings-ghost-btn" :disabled="loading" @click="loadConfig">
             <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': loading }" />
             刷新配置
@@ -638,14 +638,14 @@ onMounted(() => {
         <section class="settings-runtime-hub">
           <div class="settings-runtime-hub__head">
             <div>
-              <p class="settings-section-eyebrow">Runtime Board</p>
+              <p class="settings-section-eyebrow">运行状态</p>
               <h3>运行状态工作台</h3>
               <p>先看当前运行状态，再进入下面的配置编辑台。这里压成两个组件：左侧是更大的运行概览，右侧是压缩后的模型、OCR 与语音能力状态。</p>
             </div>
             <div class="settings-runtime-hub__actions">
               <span class="settings-inline-badge">
                 <CheckCircle2 class="h-3.5 w-3.5" />
-                Live
+                实时
               </span>
               <button type="button" class="settings-ghost-btn" :disabled="loading" @click="loadConfig">
                 <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': loading }" />
@@ -659,7 +659,7 @@ onMounted(() => {
               <section class="settings-runtime-hub__section settings-runtime-hub__section--overview">
                 <div class="settings-dashboard-card__head">
                   <div>
-                    <p class="settings-section-eyebrow">Dashboard</p>
+                    <p class="settings-section-eyebrow">概览</p>
                     <h4>运行概览</h4>
                     <p>把运行仪表盘和运行环境合在一起，只保留本机用户、配置文件、后端加载状态和密钥总量这些真正需要对照的信息。</p>
                   </div>
@@ -675,7 +675,7 @@ onMounted(() => {
               <section class="settings-runtime-hub__section settings-runtime-hub__section--status">
                 <div class="settings-dashboard-card__head">
                   <div>
-                    <p class="settings-section-eyebrow">Capability Status</p>
+                    <p class="settings-section-eyebrow">能力状态</p>
                     <h4>能力状态</h4>
                     <p>把大模型情况、OCR 状态和语音状态压缩进一个更窄的状态卡里，方便填写后快速确认接入是否生效。</p>
                   </div>
@@ -703,7 +703,7 @@ onMounted(() => {
             <section class="settings-runtime-hub__section settings-runtime-hub__section--models">
               <div class="settings-runtime-status__models">
                 <div class="settings-runtime-status__models-head">
-                  <span class="settings-section-eyebrow">Model List</span>
+                  <span class="settings-section-eyebrow">模型列表</span>
                   <span class="settings-inline-badge">
                     <Bot class="h-3.5 w-3.5" />
                     {{ models.length || 0 }} 项
@@ -781,7 +781,7 @@ onMounted(() => {
               <template v-if="activePanel === 'identity'">
                 <article class="settings-config-card">
                   <div class="settings-config-card__summary">
-                    <p class="settings-config-card__note">第一张卡只负责本机身份与前端连接。先确认当前单机用户名，再决定前端请求入口，保存后后续请求会立即切换。</p>
+                    <p class="settings-config-card__note">第一张卡只负责本机身份与前端连接。先确认当前显示名称，再决定前端请求入口，保存后后续请求会立即切换。</p>
                     <span class="settings-inline-badge">基础配置卡</span>
                   </div>
                   <div class="settings-config-card__grid settings-config-card__grid--two">
@@ -791,9 +791,9 @@ onMounted(() => {
                           <UserRound class="h-4 w-4" />
                         </div>
                         <div>
-                          <p class="settings-form-card__eyebrow">Local Profile</p>
+                          <p class="settings-form-card__eyebrow">本机身份</p>
                           <h4 class="settings-form-card__title">本机身份</h4>
-                          <p class="settings-form-card__desc">单机模式下显示在右上角、历史记录和本地工作区里的默认名称。</p>
+                          <p class="settings-form-card__desc">显示在右上角、历史记录和本地工作区里的默认名称。</p>
                         </div>
                       </div>
                       <div class="space-y-4">
@@ -822,7 +822,7 @@ onMounted(() => {
                           <Waypoints class="h-4 w-4" />
                         </div>
                         <div>
-                          <p class="settings-form-card__eyebrow">Connection</p>
+                          <p class="settings-form-card__eyebrow">连接入口</p>
                           <h4 class="settings-form-card__title">前端 API_URL</h4>
                           <p class="settings-form-card__desc">保存后后续请求会立即切到新地址，同时保留当前 API 健康检查逻辑。</p>
                         </div>
@@ -865,7 +865,7 @@ onMounted(() => {
                           <Bot class="h-4 w-4" />
                         </div>
                         <div>
-                          <p class="settings-form-card__eyebrow">Gateway</p>
+                          <p class="settings-form-card__eyebrow">模型网关</p>
                           <h4 class="settings-form-card__title">模型网关地址</h4>
                           <p class="settings-form-card__desc">先把 DeepSeek 和文心的请求入口确定下来，再填写对应密钥。</p>
                         </div>
@@ -891,7 +891,7 @@ onMounted(() => {
                           <KeyRound class="h-4 w-4" />
                         </div>
                         <div>
-                          <p class="settings-form-card__eyebrow">Secret</p>
+                          <p class="settings-form-card__eyebrow">密钥</p>
                           <h4 class="settings-form-card__title">模型 API Key</h4>
                           <p class="settings-form-card__desc">密钥留空不会覆盖旧值，只有填写新值或勾选清空才会更新。</p>
                         </div>
@@ -931,12 +931,12 @@ onMounted(() => {
                     <div class="settings-form-card__head">
                       <div class="settings-form-card__icon">
                         <ShieldCheck class="h-4 w-4" />
-                      </div>
-                      <div>
-                        <p class="settings-form-card__eyebrow">OCR Service</p>
-                        <h4 class="settings-form-card__title">OCR 服务</h4>
-                        <p class="settings-form-card__desc">保留原有掩码展示与清空逻辑，但从现在开始，OCR 和语音彻底拆开配置。</p>
-                      </div>
+                        </div>
+                        <div>
+                          <p class="settings-form-card__eyebrow">OCR 服务</p>
+                          <h4 class="settings-form-card__title">OCR 服务</h4>
+                          <p class="settings-form-card__desc">保留原有掩码展示与清空逻辑，但从现在开始，OCR 和语音彻底拆开配置。</p>
+                        </div>
                     </div>
                     <div class="space-y-4">
                       <div v-for="field in ocrSecretFields" :key="field.key" class="settings-sensitive-item">
@@ -972,12 +972,12 @@ onMounted(() => {
                     <div class="settings-form-card__head">
                       <div class="settings-form-card__icon">
                         <AudioLines class="h-4 w-4" />
-                      </div>
-                      <div>
-                        <p class="settings-form-card__eyebrow">Speech Stack</p>
-                        <h4 class="settings-form-card__title">语音能力</h4>
-                        <p class="settings-form-card__desc">用于语音识别和语音合成的鉴权信息，保存后仍由现有后端逻辑写入运行时 `.env`。</p>
-                      </div>
+                        </div>
+                        <div>
+                          <p class="settings-form-card__eyebrow">语音能力</p>
+                          <h4 class="settings-form-card__title">语音能力</h4>
+                          <p class="settings-form-card__desc">用于语音识别和语音合成的鉴权信息，保存后仍由现有后端逻辑写入运行时 `.env`。</p>
+                        </div>
                     </div>
                     <div class="space-y-4">
                       <div v-for="field in speechSecretFields" :key="field.key" class="settings-sensitive-item">
@@ -1003,6 +1003,145 @@ onMounted(() => {
                 </article>
               </template>
             </div>
+
+            <Transition name="settings-dialog">
+              <div
+                v-if="guideDialogOpen"
+                class="settings-guide-dialog-layer settings-guide-dialog-layer--embedded"
+                @click.self="closeGuideDialog"
+              >
+                <div class="settings-guide-dialog settings-guide-dialog--embedded">
+                  <div class="settings-guide-dialog__head">
+                    <div>
+                      <div class="settings-guide-panel__badge">
+                        <Image class="h-3.5 w-3.5" />
+                        操作教程
+                      </div>
+                      <h3>{{ activeGuide.title }}</h3>
+                      <p>{{ activeGuide.summary }}</p>
+                    </div>
+                    <div class="settings-guide-dialog__head-actions">
+                      <span class="settings-inline-badge">
+                        步骤 {{ guideStepIndex[activePanel] + 1 }} / {{ activeGuide.steps.length }}
+                      </span>
+                      <button type="button" class="settings-guide-dialog__close" @click="closeGuideDialog">
+                        <X class="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="settings-guide-dialog__viewport-shell">
+                    <button type="button" class="settings-guide-dialog__nav" :disabled="!canPrevGuideStep" @click="prevGuideStep">
+                      <ChevronLeft class="h-4 w-4" />
+                    </button>
+
+                    <div class="settings-guide-dialog__viewport">
+                      <div class="settings-guide-dialog__track" :style="activeGuideTrackStyle">
+                        <article v-for="step in activeGuide.steps" :key="step.id" class="settings-guide-dialog__slide">
+                          <button
+                            type="button"
+                            class="settings-guide-dialog__media"
+                            @click="openGuideImage(step.image, step.alt, step.title)"
+                          >
+                            <img :src="step.image" :alt="step.alt" class="settings-guide-dialog__image" />
+                            <span class="settings-guide-dialog__zoom">点击图片放大查看</span>
+                          </button>
+                          <div class="settings-guide-dialog__copy">
+                            <p class="settings-section-eyebrow">{{ activeGuide.eyebrow }}</p>
+                            <h4>{{ step.title }}</h4>
+                            <p>{{ step.caption }}</p>
+                            <div v-if="step.fields?.length" class="settings-guide-dialog__chips">
+                              <span v-for="field in step.fields" :key="field" class="settings-status-chip settings-status-chip--neutral">
+                                {{ field }}
+                              </span>
+                            </div>
+                          </div>
+                        </article>
+                      </div>
+                    </div>
+
+                    <button type="button" class="settings-guide-dialog__nav" :disabled="!canNextGuideStep" @click="nextGuideStep">
+                      <ChevronRight class="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div class="settings-guide-dialog__steps">
+                    <button
+                      v-for="(step, index) in activeGuide.steps"
+                      :key="step.id"
+                      type="button"
+                      class="settings-guide-dialog__step"
+                      :class="index === guideStepIndex[activePanel] ? 'settings-guide-dialog__step--active' : ''"
+                      @click="setGuideStep(activePanel, index)"
+                    >
+                      <span class="settings-guide-dialog__step-index">{{ index + 1 }}</span>
+                      <span class="settings-guide-dialog__step-copy">
+                        <strong>{{ step.title }}</strong>
+                        <span>{{ step.caption }}</span>
+                      </span>
+                    </button>
+                  </div>
+
+                  <div class="settings-guide-dialog__footer">
+                    <div v-if="activeGuide.secondaryCard" class="settings-guide-secondary settings-guide-dialog__secondary">
+                      <button
+                        v-if="activeGuide.secondaryCard.image"
+                        type="button"
+                        class="settings-guide-dialog__secondary-media"
+                        @click="openGuideImage(activeGuide.secondaryCard.image, activeGuide.secondaryCard.alt || activeGuide.secondaryCard.title, activeGuide.secondaryCard.title)"
+                      >
+                        <img
+                          :src="activeGuide.secondaryCard.image"
+                          :alt="activeGuide.secondaryCard.alt || activeGuide.secondaryCard.title"
+                          class="settings-guide-secondary__image"
+                        />
+                        <span class="settings-guide-dialog__zoom">点击图片放大查看</span>
+                      </button>
+                      <div class="settings-guide-secondary__body">
+                        <p class="settings-section-eyebrow">补充参考</p>
+                        <h4>{{ activeGuide.secondaryCard.title }}</h4>
+                        <p>{{ activeGuide.secondaryCard.description }}</p>
+                        <div v-if="activeGuide.secondaryCard.fields?.length" class="settings-guide-dialog__chips">
+                          <span v-for="field in activeGuide.secondaryCard.fields" :key="field" class="settings-status-chip settings-status-chip--neutral">
+                            {{ field }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="settings-guide-panel__tips settings-guide-dialog__tips">
+                      <h4>填写提醒</h4>
+                      <ul class="settings-note-list settings-note-list--compact">
+                        <li v-for="tip in activeGuide.tips" :key="tip">{{ tip }}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Transition>
+
+            <Transition name="settings-dialog">
+              <div
+                v-if="guideImageViewerOpen"
+                class="settings-image-viewer-layer settings-image-viewer-layer--embedded"
+                @click.self="closeGuideImage"
+              >
+                <div class="settings-image-viewer settings-image-viewer--embedded">
+                  <div class="settings-image-viewer__head">
+                    <div>
+                      <p class="settings-section-eyebrow">图片预览</p>
+                      <h3>{{ guideViewerImage.title || '教程图片' }}</h3>
+                    </div>
+                    <button type="button" class="settings-guide-dialog__close" @click="closeGuideImage">
+                      <X class="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div class="settings-image-viewer__body">
+                    <img :src="guideViewerImage.src" :alt="guideViewerImage.alt" class="settings-image-viewer__image" />
+                  </div>
+                </div>
+              </div>
+            </Transition>
           </div>
 
           <div class="settings-savebar">
@@ -1023,7 +1162,7 @@ onMounted(() => {
         <section class="settings-notes">
           <button type="button" class="settings-notes__toggle" @click="settingsNotesOpen = !settingsNotesOpen">
             <div>
-              <p class="settings-section-eyebrow">Docs</p>
+              <p class="settings-section-eyebrow">说明</p>
               <h3>配置说明</h3>
             </div>
             <span class="settings-notes__state">
@@ -1041,136 +1180,6 @@ onMounted(() => {
       </section>
     </div>
 
-    <Transition name="settings-dialog">
-      <div v-if="guideDialogOpen" class="settings-guide-dialog-layer" @click.self="closeGuideDialog">
-        <div class="settings-guide-dialog">
-          <div class="settings-guide-dialog__head">
-            <div>
-              <div class="settings-guide-panel__badge">
-                <Image class="h-3.5 w-3.5" />
-                Guide Tutorial
-              </div>
-              <h3>{{ activeGuide.title }}</h3>
-              <p>{{ activeGuide.summary }}</p>
-            </div>
-            <div class="settings-guide-dialog__head-actions">
-              <span class="settings-inline-badge">
-                步骤 {{ guideStepIndex[activePanel] + 1 }} / {{ activeGuide.steps.length }}
-              </span>
-              <button type="button" class="settings-guide-dialog__close" @click="closeGuideDialog">
-                <X class="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
-          <div class="settings-guide-dialog__viewport-shell">
-            <button type="button" class="settings-guide-dialog__nav" :disabled="!canPrevGuideStep" @click="prevGuideStep">
-              <ChevronLeft class="h-4 w-4" />
-            </button>
-
-            <div class="settings-guide-dialog__viewport">
-              <div class="settings-guide-dialog__track" :style="activeGuideTrackStyle">
-                <article v-for="step in activeGuide.steps" :key="step.id" class="settings-guide-dialog__slide">
-                  <button
-                    type="button"
-                    class="settings-guide-dialog__media"
-                    @click="openGuideImage(step.image, step.alt, step.title)"
-                  >
-                    <img :src="step.image" :alt="step.alt" class="settings-guide-dialog__image" />
-                    <span class="settings-guide-dialog__zoom">点击图片放大查看</span>
-                  </button>
-                  <div class="settings-guide-dialog__copy">
-                    <p class="settings-section-eyebrow">{{ activeGuide.eyebrow }}</p>
-                    <h4>{{ step.title }}</h4>
-                    <p>{{ step.caption }}</p>
-                    <div v-if="step.fields?.length" class="settings-guide-dialog__chips">
-                      <span v-for="field in step.fields" :key="field" class="settings-status-chip settings-status-chip--neutral">
-                        {{ field }}
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              </div>
-            </div>
-
-            <button type="button" class="settings-guide-dialog__nav" :disabled="!canNextGuideStep" @click="nextGuideStep">
-              <ChevronRight class="h-4 w-4" />
-            </button>
-          </div>
-
-          <div class="settings-guide-dialog__steps">
-            <button
-              v-for="(step, index) in activeGuide.steps"
-              :key="step.id"
-              type="button"
-              class="settings-guide-dialog__step"
-              :class="index === guideStepIndex[activePanel] ? 'settings-guide-dialog__step--active' : ''"
-              @click="setGuideStep(activePanel, index)"
-            >
-              <span class="settings-guide-dialog__step-index">{{ index + 1 }}</span>
-              <span class="settings-guide-dialog__step-copy">
-                <strong>{{ step.title }}</strong>
-                <span>{{ step.caption }}</span>
-              </span>
-            </button>
-          </div>
-
-          <div class="settings-guide-dialog__footer">
-            <div v-if="activeGuide.secondaryCard" class="settings-guide-secondary settings-guide-dialog__secondary">
-              <button
-                v-if="activeGuide.secondaryCard.image"
-                type="button"
-                class="settings-guide-dialog__secondary-media"
-                @click="openGuideImage(activeGuide.secondaryCard.image, activeGuide.secondaryCard.alt || activeGuide.secondaryCard.title, activeGuide.secondaryCard.title)"
-              >
-                <img
-                  :src="activeGuide.secondaryCard.image"
-                  :alt="activeGuide.secondaryCard.alt || activeGuide.secondaryCard.title"
-                  class="settings-guide-secondary__image"
-                />
-                <span class="settings-guide-dialog__zoom">点击图片放大查看</span>
-              </button>
-              <div class="settings-guide-secondary__body">
-                <p class="settings-section-eyebrow">补充参考</p>
-                <h4>{{ activeGuide.secondaryCard.title }}</h4>
-                <p>{{ activeGuide.secondaryCard.description }}</p>
-                <div v-if="activeGuide.secondaryCard.fields?.length" class="settings-guide-dialog__chips">
-                  <span v-for="field in activeGuide.secondaryCard.fields" :key="field" class="settings-status-chip settings-status-chip--neutral">
-                    {{ field }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="settings-guide-panel__tips settings-guide-dialog__tips">
-              <h4>填写提醒</h4>
-              <ul class="settings-note-list settings-note-list--compact">
-                <li v-for="tip in activeGuide.tips" :key="tip">{{ tip }}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
-
-    <Transition name="settings-dialog">
-      <div v-if="guideImageViewerOpen" class="settings-image-viewer-layer" @click.self="closeGuideImage">
-        <div class="settings-image-viewer">
-          <div class="settings-image-viewer__head">
-            <div>
-              <p class="settings-section-eyebrow">Image Preview</p>
-              <h3>{{ guideViewerImage.title || '教程图片' }}</h3>
-            </div>
-            <button type="button" class="settings-guide-dialog__close" @click="closeGuideImage">
-              <X class="h-4 w-4" />
-            </button>
-          </div>
-          <div class="settings-image-viewer__body">
-            <img :src="guideViewerImage.src" :alt="guideViewerImage.alt" class="settings-image-viewer__image" />
-          </div>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>
 
@@ -1182,11 +1191,9 @@ onMounted(() => {
 .settings-dashboard-card,
 .settings-runtime-hub {
   position: relative;
-  border: 1px solid rgba(226, 232, 240, 0.86);
-  background: #ffffff;
-  box-shadow:
-    0 20px 56px rgba(15, 23, 42, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--ui-border-default);
+  background: var(--ui-surface-raised);
+  box-shadow: var(--ui-shadow-md);
 }
 
 .settings-hero {
@@ -1205,9 +1212,9 @@ onMounted(() => {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.14), transparent 28%),
-    radial-gradient(circle at 82% 14%, rgba(139, 92, 246, 0.14), transparent 26%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 62%);
+    radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.14), transparent 28%),
+    radial-gradient(circle at 82% 14%, rgba(99, 102, 241, 0.14), transparent 26%),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 70%);
 }
 
 .settings-hero__copy {
@@ -1231,9 +1238,9 @@ onMounted(() => {
 
 .settings-hero__badge {
   padding: 0.4rem 0.8rem;
-  border: 1px solid rgba(226, 232, 240, 0.88);
-  background: rgba(255, 255, 255, 0.8);
-  color: #475569;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -1244,7 +1251,7 @@ onMounted(() => {
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .settings-hero p {
@@ -1252,7 +1259,7 @@ onMounted(() => {
   max-width: 56rem;
   font-size: 0.95rem;
   line-height: 1.8;
-  color: #475569;
+  color: var(--ui-text-secondary);
 }
 
 .settings-hero__meta {
@@ -1266,9 +1273,9 @@ onMounted(() => {
 
 .settings-hero__meta-chip {
   padding: 0.55rem 0.85rem;
-  border: 1px solid rgba(226, 232, 240, 0.88);
-  background: rgba(255, 255, 255, 0.72);
-  color: #334155;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-secondary);
 }
 
 .settings-workbench,
@@ -1291,7 +1298,7 @@ onMounted(() => {
 .settings-dashboard-card__head h2,
 .settings-dashboard-card__head h3,
 .settings-stage__title {
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .settings-workbench__top h2 {
@@ -1304,7 +1311,7 @@ onMounted(() => {
 .settings-stage__desc,
 .settings-form-card__desc,
 .settings-helper {
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .settings-workbench__top p,
@@ -1323,7 +1330,7 @@ onMounted(() => {
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--ui-text-muted);
 }
 
 .settings-ghost-btn,
@@ -1333,9 +1340,9 @@ onMounted(() => {
   justify-content: center;
   gap: 0.55rem;
   border-radius: 1rem;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: rgba(255, 255, 255, 0.84);
-  color: #475569;
+  border: 1px solid var(--ui-border-default);
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-secondary);
   font-size: 0.86rem;
   font-weight: 700;
   transition:
@@ -1356,9 +1363,9 @@ onMounted(() => {
 .settings-ghost-btn:hover:not(:disabled),
 .settings-secondary-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: rgba(129, 140, 248, 0.42);
-  background: rgba(238, 242, 255, 0.86);
-  color: #4338ca;
+  border-color: var(--ui-border-strong);
+  background: var(--ui-surface-1);
+  color: var(--ui-accent-strong);
 }
 
 .settings-alert {
@@ -1370,15 +1377,15 @@ onMounted(() => {
 }
 
 .settings-alert--error {
-  border: 1px solid rgba(248, 113, 113, 0.28);
-  background: rgba(254, 242, 242, 0.9);
-  color: #b91c1c;
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  background: var(--ui-danger-soft);
+  color: var(--ui-danger);
 }
 
 .settings-alert--success {
-  border: 1px solid rgba(16, 185, 129, 0.24);
-  background: rgba(236, 253, 245, 0.9);
-  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  background: var(--ui-success-soft);
+  color: var(--ui-success);
 }
 
 .settings-panel-stage {
@@ -1426,8 +1433,8 @@ onMounted(() => {
   gap: 0.9rem;
   align-items: start;
   border-radius: 1.3rem;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--ui-border-default);
+  background: var(--ui-surface-floating);
   padding: 1rem;
   text-align: left;
   transition:
@@ -1473,14 +1480,14 @@ onMounted(() => {
 
 .settings-step-nav__item:hover {
   transform: translateY(-1px);
-  border-color: rgba(129, 140, 248, 0.3);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  border-color: var(--ui-border-strong);
+  box-shadow: var(--ui-shadow-sm);
 }
 
 .settings-step-nav__item--active {
-  border-color: rgba(129, 140, 248, 0.34);
-  background: rgba(248, 250, 255, 0.96);
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.12);
+  border-color: rgba(99, 102, 241, 0.24);
+  background: rgba(99, 102, 241, 0.05);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.08);
 }
 
 .settings-step-nav__lead {
@@ -1497,18 +1504,18 @@ onMounted(() => {
   width: 2rem;
   height: 2rem;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  background: rgba(255, 255, 255, 0.94);
-  color: #475569;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-secondary);
   font-size: 0.78rem;
   font-weight: 800;
 }
 
 .settings-step-nav__item--active .settings-step-nav__index,
 .settings-step-nav__item--active .settings-step-nav__icon {
-  border-color: rgba(199, 210, 254, 0.92);
-  background: rgba(238, 242, 255, 0.94);
-  color: #4338ca;
+  border-color: rgba(99, 102, 241, 0.22);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
 }
 
 .settings-step-nav__copy {
@@ -1521,13 +1528,13 @@ onMounted(() => {
 .settings-step-nav__copy strong {
   font-size: 0.92rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--ui-text-primary);
 }
 
 .settings-step-nav__copy span {
   font-size: 0.79rem;
   line-height: 1.62;
-  color: #64748b;
+  color: var(--ui-text-secondary);
 }
 
 .settings-step-nav__state {
@@ -1538,12 +1545,12 @@ onMounted(() => {
   width: fit-content;
   margin-top: 0.15rem;
   border-radius: 9999px;
-  border: 1px solid rgba(226, 232, 240, 0.88);
-  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
   padding: 0.42rem 0.72rem;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--ui-text-secondary);
 }
 
 .settings-step-nav__footer .settings-secondary-btn {
@@ -1826,6 +1833,9 @@ onMounted(() => {
 }
 
 .settings-editor-card__body {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   margin-top: 1.15rem;
   border-radius: 1.5rem;
   border: 1px solid rgba(226, 232, 240, 0.82);
@@ -2176,25 +2186,30 @@ onMounted(() => {
 
 .settings-guide-dialog-layer,
 .settings-image-viewer-layer {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 70;
+  z-index: 20;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  padding: 1.5rem;
-  background: rgba(15, 23, 42, 0.18);
+  padding: clamp(0.75rem, 2vw, 1rem);
+  border-radius: inherit;
+  background: rgba(241, 245, 249, 0.84);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .settings-guide-dialog,
 .settings-image-viewer {
-  width: min(1120px, 100%);
-  max-height: calc(100vh - 3rem);
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
   overflow: auto;
   border-radius: 1.8rem;
   border: 1px solid rgba(226, 232, 240, 0.9);
   background: #ffffff;
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
+  overscroll-behavior: contain;
 }
 
 .settings-guide-dialog {
@@ -2202,8 +2217,25 @@ onMounted(() => {
 }
 
 .settings-image-viewer {
-  width: min(1200px, 100%);
   padding: 1.2rem;
+}
+
+.settings-guide-dialog-layer--embedded {
+  z-index: 18;
+}
+
+.settings-image-viewer-layer--embedded {
+  z-index: 24;
+}
+
+.settings-guide-dialog--embedded,
+.settings-image-viewer--embedded {
+  height: 100%;
+}
+
+.settings-image-viewer--embedded {
+  display: flex;
+  flex-direction: column;
 }
 
 .settings-guide-dialog__head,
@@ -2328,7 +2360,7 @@ onMounted(() => {
 .settings-guide-dialog__image {
   display: block;
   width: 100%;
-  max-height: 440px;
+  max-height: min(440px, 46vh);
   object-fit: contain;
   background: #ffffff;
 }
@@ -2457,12 +2489,24 @@ onMounted(() => {
   padding: 0.9rem;
 }
 
+.settings-image-viewer--embedded .settings-image-viewer__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .settings-image-viewer__image {
   display: block;
   width: 100%;
   max-height: calc(100vh - 10rem);
   object-fit: contain;
   background: #ffffff;
+}
+
+.settings-image-viewer--embedded .settings-image-viewer__image {
+  max-height: 100%;
 }
 
 .settings-dialog-enter-active,
@@ -2623,7 +2667,7 @@ onMounted(() => {
 .settings-toggle__input {
   width: 1rem;
   height: 1rem;
-  accent-color: #4f46e5;
+  accent-color: var(--ui-accent);
 }
 
 .settings-status-chip {
@@ -2632,14 +2676,16 @@ onMounted(() => {
 
 .settings-status-chip--success {
   padding: 0.45rem 0.8rem;
-  background: rgba(220, 252, 231, 0.92);
-  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  background: var(--ui-success-soft);
+  color: var(--ui-success);
 }
 
 .settings-status-chip--warning {
   padding: 0.45rem 0.8rem;
-  background: rgba(254, 249, 195, 0.92);
-  color: #a16207;
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  background: var(--ui-warning-soft);
+  color: var(--ui-warning);
 }
 
 .settings-savebar {
@@ -2649,7 +2695,7 @@ onMounted(() => {
   gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid rgba(226, 232, 240, 0.82);
+  border-top: 1px solid var(--ui-border-subtle);
 }
 
 .settings-primary-btn {
@@ -2767,7 +2813,7 @@ onMounted(() => {
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 1rem;
-  color: #475569;
+  color: var(--ui-text-secondary);
   font-size: 0.88rem;
   line-height: 1.7;
 }
@@ -2786,7 +2832,7 @@ onMounted(() => {
   width: 0.38rem;
   height: 0.38rem;
   border-radius: 9999px;
-  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
 }
 
 @media (min-width: 768px) {
@@ -2869,7 +2915,7 @@ onMounted(() => {
 
   .settings-guide-dialog-layer,
   .settings-image-viewer-layer {
-    padding: 0.9rem;
+    padding: 0.75rem;
   }
 
   .settings-guide-dialog__viewport-shell {

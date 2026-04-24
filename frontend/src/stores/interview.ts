@@ -6,6 +6,7 @@ import type { HealthStatus } from '../services/interview'
 import type { EvalDraftUpdate } from '../services/sse'
 import { normalizeJobTitle } from '../utils/jobTitle'
 import { isReusableOcrText } from '../utils/ocr'
+import { assertValidResumeFile } from '../utils/resumeFile'
 
 export interface EvalDraft extends EvalDraftUpdate {
   timestamp: number
@@ -177,6 +178,7 @@ export const useInterviewStore = defineStore('interview', () => {
 
   function setUploadedResume(file: File | null) {
     if (!file) return
+    assertValidResumeFile(file)
     config.value.resumeFile = file
     config.value.resumeOcrText = undefined
     config.value.resumeFileName = undefined

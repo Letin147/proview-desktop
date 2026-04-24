@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useResumeBuilderStore } from './resumeBuilder'
 import { buildApiUrl } from '../services/runtimeConfig'
+import { assertValidResumeFile } from '../utils/resumeFile'
 
 /**
  * 简历导入状态管理
@@ -19,6 +20,8 @@ export const useResumeImportStore = defineStore('resumeImport', () => {
     const builderStore = useResumeBuilderStore()
 
     try {
+      assertValidResumeFile(file)
+
       // 1. 重置状态
       isImporting.value = true
       importProgress.value = 'uploading'

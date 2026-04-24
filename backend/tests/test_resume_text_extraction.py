@@ -12,7 +12,10 @@ TEST_FILES_ROOT = BACKEND_ROOT / "tests"
 
 from services import resume_text_extraction as extraction_service
 from services.resume_text_extraction import (
+    ResumeExtractionError,
     ResumeOcrUnavailableError,
+    UnsupportedResumeFormatError,
+    ensure_supported_resume_extension,
     extract_resume_content,
     unwrap_resume_text,
 )
@@ -127,6 +130,24 @@ class ResumeTextExtractionTests(unittest.TestCase):
             self.assertIn("Python 工程师", result["text"])
         finally:
             docx_path.unlink(missing_ok=True)
+
+    def test_invalid_docx_is_reported_as_resume_extraction_error(self):
+        docx_path = TEST_FILES_ROOT / f"__resume_text_test_{uuid.uuid4().hex}.docx"
+        try:
+            docx_path.write_text("this is not a real docx archive", encoding="utf-8")
+
+            with self.assertRaisesRegex(ResumeExtractionError, "不是有效的 .docx 文件"):
+                extract_resume_content(
+                    str(docx_path),
+                    include_images=False,
+                    ocr_available=False,
+                )
+        finally:
+            docx_path.unlink(missing_ok=True)
+
+    def test_legacy_doc_is_rejected_before_parsing(self):
+        with self.assertRaisesRegex(UnsupportedResumeFormatError, "暂不支持旧版 .doc"):
+            ensure_supported_resume_extension("legacy_resume.doc")
 
     def test_unwrap_resume_text_removes_wrapper(self):
         wrapped_text = (

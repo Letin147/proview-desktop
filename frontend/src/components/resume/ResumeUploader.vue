@@ -23,6 +23,7 @@ import QuestionnaireForm from './QuestionnaireForm.vue'
 import StageDeck from '../StageDeck.vue'
 import { isReusableOcrText } from '../../utils/ocr'
 import { generateQuestionnairePromptContext, hasMeaningfulQuestionnaireData } from '../../utils/prompt-serializer'
+import { getResumeFileValidationError, RESUME_UPLOAD_ACCEPT, RESUME_UPLOAD_HINT } from '../../utils/resumeFile'
 
 const store = useResumeStore()
 const interviewStore = useInterviewStore()
@@ -33,6 +34,7 @@ const isDragging = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 const isQuestionnaireOpen = ref(true)
 const questionnaireFocus = ref<'target' | 'goals' | 'evidence'>('target')
+const selectionError = ref('')
 
 const existingResumeName = ref('')
 const existingOcrText = ref('')
@@ -153,15 +155,42 @@ onMounted(async () => {
 
 function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
-  file.value = input.files?.[0] || null
+  const nextFile = input.files?.[0] || null
+  if (!nextFile) {
+    selectionError.value = ''
+    return
+  }
+
+  const validationError = getResumeFileValidationError(nextFile)
+  if (validationError) {
+    file.value = null
+    selectionError.value = validationError
+    input.value = ''
+    return
+  }
+
+  file.value = nextFile
+  selectionError.value = ''
   if (file.value) mode.value = 'upload'
 }
 
 function onDrop(e: DragEvent) {
   isDragging.value = false
-  const dropped = e.dataTransfer?.files?.[0]
+  const dropped = e.dataTransfer?.files?.[0] || null
+  if (!dropped) {
+    return
+  }
+
+  const validationError = getResumeFileValidationError(dropped)
+  if (validationError) {
+    file.value = null
+    selectionError.value = validationError
+    return
+  }
+
   if (dropped) {
     file.value = dropped
+    selectionError.value = ''
     mode.value = 'upload'
   }
 }
@@ -173,12 +202,14 @@ function triggerFileInput() {
 async function switchToUpload() {
   mode.value = 'upload'
   file.value = null
+  selectionError.value = ''
   await loadLatestReportContext()
 }
 
 async function switchToExisting() {
   mode.value = 'existing'
   file.value = null
+  selectionError.value = ''
   await loadExistingResumeReportContext()
 }
 
@@ -358,14 +389,14 @@ const activeQuestionnaireCard = computed(() => (
           <input
             ref="fileInput"
             type="file"
-            accept=".pdf,.docx,.md,.markdown,.txt,.jpg,.jpeg,.png,.bmp,.webp,.heic,.heif"
+            :accept="RESUME_UPLOAD_ACCEPT"
             class="hidden"
             @change="onFileChange"
           />
           <div v-if="!file" class="flex flex-col items-center gap-2 text-slate-400 dark:text-slate-500">
             <Upload class="h-8 w-8" />
             <p class="text-sm">拖拽简历到此处，或点击上传</p>
-            <p class="text-xs">支持 PDF / Word(.docx) / Markdown / TXT / 图片</p>
+            <p class="text-xs">支持 {{ RESUME_UPLOAD_HINT }}</p>
           </div>
           <div v-else class="flex items-center gap-3">
             <FileText class="h-6 w-6 text-primary" />
@@ -375,6 +406,7 @@ const activeQuestionnaireCard = computed(() => (
             </div>
           </div>
         </div>
+        <p v-if="selectionError" class="mt-2 text-xs font-medium text-red-500">{{ selectionError }}</p>
       </div>
 
       <div>

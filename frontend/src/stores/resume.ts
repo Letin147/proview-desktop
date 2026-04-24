@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import type { ResumeSection, ResumeSuggestion, BuilderData, ResumeReportContext } from '../types/resume'
 import type { ResumeDocument, TemplateId } from '../types/resume-builder'
 import * as resumeApi from '../services/resume'
-import { renderContent } from '../utils/renderContent'
+import { assertValidResumeFile } from '../utils/resumeFile'
 
 export type ResumePhase = 'upload' | 'analyzing' | 'review' | 'exporting' | 'done'
 
@@ -113,6 +113,14 @@ export const useResumeStore = defineStore('resume', () => {
   }
 
   async function analyzeResume(file: File, jobTitle: string) {
+    try {
+      assertValidResumeFile(file)
+    } catch (e: any) {
+      error.value = e?.message || '不支持的简历文件'
+      phase.value = 'upload'
+      return
+    }
+
     phase.value = 'analyzing'
     skipOcr.value = false
     error.value = ''
@@ -198,16 +206,6 @@ export const useResumeStore = defineStore('resume', () => {
   }
 
   function initBuilderDocument(data: BuilderData) {
-    // Pre-process all text content so templates can use v-html directly
-    const processedModules = data.modules.map(mod => ({
-      ...mod,
-      content: mod.content !== undefined ? renderContent(mod.content) : mod.content,
-      entries: mod.entries?.map(entry => ({
-        ...entry,
-        detail: entry.detail ? renderContent(entry.detail) : entry.detail,
-      })),
-    }))
-
     builderDocument.value = {
       id: 'resume-opt-' + Date.now(),
       mode: 'general',
@@ -222,9 +220,16 @@ export const useResumeStore = defineStore('resume', () => {
         photoShow: true,
       },
       basicInfo: data.basicInfo,
-      modules: processedModules,
+      modules: data.modules,
       polishSuggestions: [],
     }
+  }
+
+  function findBuilderModule(section: ResumeSection) {
+    if (!builderDocument.value) return null
+    const moduleType = SECTION_TO_MODULE_TYPE[section.type]
+    if (!moduleType) return null
+    return builderDocument.value.modules.find(m => m.type === moduleType) || null
   }
 
   function setTemplateId(id: TemplateId) {
@@ -265,22 +270,18 @@ export const useResumeStore = defineStore('resume', () => {
   }
 
   function syncSuggestionToBuilder(sug: ResumeSuggestion, section: ResumeSection) {
-    if (!builderDocument.value) return
-    const moduleType = SECTION_TO_MODULE_TYPE[section.type]
-    if (!moduleType) return
-
-    const mod = builderDocument.value.modules.find(m => m.type === moduleType)
+    const mod = findBuilderModule(section)
     if (!mod) return
 
     if (mod.entries?.length) {
       for (const entry of mod.entries) {
         if (entry.detail && entry.detail.includes(sug.originalText)) {
-          entry.detail = renderContent(entry.detail.replace(sug.originalText, sug.suggestedText))
+          entry.detail = entry.detail.replace(sug.originalText, sug.suggestedText)
           break
         }
       }
     } else if (mod.content !== undefined) {
-      mod.content = renderContent((mod.content || '').replace(sug.originalText, sug.suggestedText))
+      mod.content = (mod.content || '').replace(sug.originalText, sug.suggestedText)
     }
   }
 
@@ -291,12 +292,41 @@ export const useResumeStore = defineStore('resume', () => {
 
   function updateSectionContent(sectionId: string, content: string) {
     const sec = sections.value.find(s => s.id === sectionId)
-    if (sec) sec.content = content
+    if (!sec) return
+
+    sec.content = content
+
+    const mod = findBuilderModule(sec)
+    if (!mod) return
+
+    if (mod.entries?.length === 1) {
+      const [entry] = mod.entries
+      if (entry) {
+        entry.detail = content
+        return
+      }
+    }
+
+    if (mod.content !== undefined) {
+      mod.content = content
+    }
   }
 
   function updateSectionTitle(sectionId: string, title: string) {
     const sec = sections.value.find(s => s.id === sectionId)
-    if (sec) sec.title = title
+    if (!sec) return
+
+    sec.title = title
+
+    if (!builderDocument.value) return
+
+    if (sec.type === 'personal_info') {
+      builderDocument.value.basicInfo.name = title
+      return
+    }
+
+    const mod = findBuilderModule(sec)
+    if (mod) mod.title = title
   }
 
   function reorderSections(fromIndex: number, toIndex: number) {

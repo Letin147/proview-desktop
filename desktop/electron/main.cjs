@@ -14,12 +14,20 @@ let backendProcess = null
 let mainWindow = null
 let splashWindow = null
 let isQuitting = false
+let isRecoveringWindow = false
+let mainWindowStartupPromise = null
+let mainWindowRecoveryPromise = null
 let splashStatus = {
   message: 'AI 面试官正在启动中...',
   stage: '正在唤醒本地面试引擎',
 }
 
 app.setAppUserModelId('com.proview.desktop')
+
+const hasSingleInstanceLock = app.requestSingleInstanceLock()
+if (!hasSingleInstanceLock) {
+  app.quit()
+}
 
 function logBootstrap(message) {
   try {
@@ -41,6 +49,20 @@ function appendBackendLog(chunk) {
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function focusWindow(window) {
+  if (!window || window.isDestroyed()) {
+    return
+  }
+
+  if (window.isMinimized()) {
+    window.restore()
+  }
+  if (!window.isVisible()) {
+    window.show()
+  }
+  window.focus()
 }
 
 function getBackendSpawnConfig() {
@@ -370,6 +392,28 @@ async function createAppWindow() {
     },
   })
 
+  window.on('unresponsive', () => {
+    logBootstrap('Main window became unresponsive.')
+    if (mainWindow === window) {
+      void recoverMainWindow('渲染进程无响应')
+    }
+  })
+  window.webContents.on('render-process-gone', (_event, details) => {
+    logBootstrap(`Renderer process gone: reason=${details.reason} exitCode=${details.exitCode}`)
+    if (mainWindow === window) {
+      void recoverMainWindow(`渲染进程已退出（${details.reason}）`)
+    }
+  })
+  window.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    if (!isMainFrame || errorCode === -3) {
+      return
+    }
+    logBootstrap(`Renderer load failed: code=${errorCode} description=${errorDescription} url=${validatedURL}`)
+    if (mainWindow === window) {
+      void recoverMainWindow(`主界面加载失败（${errorCode}: ${errorDescription}）`)
+    }
+  })
+
   const appHtmlPath = getAppHtmlPath()
   logBootstrap(`Loading renderer from ${appHtmlPath}`)
   if (!fs.existsSync(appHtmlPath)) {
@@ -387,7 +431,7 @@ async function createAppWindow() {
 
 async function createMainWindow() {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.focus()
+    focusWindow(mainWindow)
     return mainWindow
   }
 
@@ -411,12 +455,63 @@ async function createMainWindow() {
   })
 
   if (!window.isDestroyed()) {
-    window.show()
-    window.focus()
+    focusWindow(window)
   }
 
   await closeSplashWindow()
   return window
+}
+
+function ensureMainWindow() {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    focusWindow(mainWindow)
+    return Promise.resolve(mainWindow)
+  }
+
+  if (mainWindowStartupPromise) {
+    return mainWindowStartupPromise
+  }
+
+  mainWindowStartupPromise = (async () => {
+    try {
+      return await createMainWindow()
+    } finally {
+      mainWindowStartupPromise = null
+    }
+  })()
+
+  return mainWindowStartupPromise
+}
+
+function recoverMainWindow(reason) {
+  if (isQuitting) {
+    return Promise.resolve(null)
+  }
+
+  if (mainWindowRecoveryPromise) {
+    return mainWindowRecoveryPromise
+  }
+
+  logBootstrap(`Recovering main window: ${reason}`)
+  mainWindowRecoveryPromise = (async () => {
+    try {
+      isRecoveringWindow = true
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.destroy()
+      }
+      mainWindow = null
+      mainWindowStartupPromise = null
+      return await ensureMainWindow()
+    } catch (error) {
+      await reportStartupFailure(new Error(`主界面恢复失败：${String(error && error.message ? error.message : error)}`))
+      return null
+    } finally {
+      isRecoveringWindow = false
+      mainWindowRecoveryPromise = null
+    }
+  })()
+
+  return mainWindowRecoveryPromise
 }
 
 async function reportStartupFailure(error, shouldQuit = false) {
@@ -435,17 +530,30 @@ app.on('before-quit', () => {
   stopBackend()
 })
 
+app.on('second-instance', async (_event, commandLine, workingDirectory) => {
+  logBootstrap(`Second instance detected. cwd=${workingDirectory} argv=${JSON.stringify(commandLine)}`)
+  try {
+    await app.whenReady()
+    await ensureMainWindow()
+  } catch (error) {
+    logBootstrap(`Failed to focus existing window for second instance: ${String(error && error.message ? error.message : error)}`)
+  }
+})
+
 app.whenReady().then(async () => {
   try {
     logBootstrap(`App ready. isPackaged=${app.isPackaged} resourcesPath=${process.resourcesPath}`)
     registerDesktopFileHandlers()
-    await createMainWindow()
+    await ensureMainWindow()
   } catch (error) {
     await reportStartupFailure(error, true)
   }
 })
 
 app.on('window-all-closed', () => {
+  if (isRecoveringWindow) {
+    return
+  }
   stopBackend()
   if (process.platform !== 'darwin' || isQuitting) {
     app.quit()
@@ -454,12 +562,12 @@ app.on('window-all-closed', () => {
 
 app.on('activate', async () => {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.focus()
+    focusWindow(mainWindow)
     return
   }
 
   try {
-    await createMainWindow()
+    await ensureMainWindow()
   } catch (error) {
     await reportStartupFailure(error)
   }

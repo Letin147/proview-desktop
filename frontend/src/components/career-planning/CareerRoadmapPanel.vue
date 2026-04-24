@@ -31,12 +31,10 @@ function getStatusConfig(status: string) {
 }
 
 const gradients = [
-  'from-indigo-500 to-purple-600',
-  'from-purple-500 to-pink-600',
-  'from-pink-500 to-rose-600',
-  'from-cyan-500 to-blue-600',
-  'from-emerald-500 to-teal-600',
-  'from-amber-500 to-orange-600',
+  'from-sky-500 to-indigo-500',
+  'from-indigo-500 to-cyan-500',
+  'from-cyan-500 to-sky-600',
+  'from-slate-500 to-indigo-500',
 ]
 </script>
 
@@ -47,7 +45,7 @@ export default {
 </script>
 
 <template>
-  <section class="rounded-3xl border border-slate-200/85 bg-white/90 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0C0F17]/90">
+  <section class="rounded-3xl border border-slate-200/85 bg-white/90 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0F1420]/92">
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white/90 text-indigo-600 dark:border-white/10 dark:bg-white/10 dark:text-indigo-300">
@@ -66,19 +64,19 @@ export default {
     <!-- 时间轴容器 -->
     <div class="relative mt-6">
       <!-- 连接线 -->
-      <div class="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-slate-300 via-indigo-300 to-slate-300 opacity-40 dark:from-slate-700 dark:via-indigo-500/40 dark:to-slate-700 md:hidden"></div>
+      <div class="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-slate-300 via-indigo-300 to-cyan-300 opacity-40 dark:from-slate-700 dark:via-indigo-500/40 dark:to-cyan-500/30 md:hidden"></div>
       
       <!-- 桌面端：横向三列 -->
       <div class="hidden md:grid md:grid-cols-3 gap-4">
         <article
           v-for="(milestone, index) in milestones"
           :key="milestone.id"
-          class="group relative rounded-2xl border-2 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+          class="group relative rounded-2xl border p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
           :class="[
             getStatusConfig(milestone.status).border,
-            milestone.status === 'completed' 
-              ? 'bg-white/90 dark:bg-[#0C0F17]/80' 
-              : 'bg-white/80 dark:bg-[#0C0F17]/80'
+            milestone.status === 'completed'
+              ? 'bg-white/92 dark:bg-[#111827]/82'
+              : 'bg-white/84 dark:bg-[#111827]/78'
           ]"
         >
           <!-- 阶段指示器 -->
@@ -98,7 +96,7 @@ export default {
           </div>
 
           <!-- 状态图标 -->
-          <div class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md dark:bg-[#0C0F17]" :class="getStatusConfig(milestone.status).color">
+          <div class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md dark:bg-[#0F172A]" :class="getStatusConfig(milestone.status).color">
             <component :is="getStatusConfig(milestone.status).icon" class="h-4 w-4" />
           </div>
 
@@ -127,18 +125,18 @@ export default {
 
       <!-- 移动端：垂直时间轴 -->
       <div class="relative md:hidden">
-        <div class="absolute left-5 top-0 h-full w-0.5 bg-gradient-to-b from-slate-300 via-indigo-300 to-slate-300 dark:from-slate-700 dark:via-indigo-500/40 dark:to-slate-700"></div>
+        <div class="absolute left-5 top-0 h-full w-0.5 bg-gradient-to-b from-slate-300 via-indigo-300 to-cyan-300 dark:from-slate-700 dark:via-indigo-500/40 dark:to-cyan-500/30"></div>
         
         <div class="space-y-4">
           <article
             v-for="(milestone, index) in milestones"
             :key="milestone.id"
-            class="relative ml-0 rounded-2xl border-2 p-4 transition-all duration-300"
+            class="relative ml-0 rounded-2xl border p-4 transition-all duration-300"
             :class="[
               getStatusConfig(milestone.status).border,
-              milestone.status === 'completed' 
-                ? 'bg-white/90 dark:bg-[#0C0F17]/80' 
-                : 'bg-white/80 dark:bg-[#0C0F17]/80'
+              milestone.status === 'completed'
+                ? 'bg-white/92 dark:bg-[#111827]/82'
+                : 'bg-white/84 dark:bg-[#111827]/78'
             ]"
           >
             <div class="absolute -left-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white shadow-lg" :class="`bg-gradient-to-br ${gradients[index % gradients.length]}`">

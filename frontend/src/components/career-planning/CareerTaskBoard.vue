@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CheckCircle2, Clock, Zap, BookOpen, Target, Code, GraduationCap, List } from 'lucide-vue-next'
+import { CheckCircle2, Clock, ListTodo, Zap, BookOpen, Target, Code, GraduationCap, List } from 'lucide-vue-next'
 import type { CareerTask } from '../../types/career-planning'
 
 defineProps<{
@@ -27,10 +27,10 @@ function getTaskTypeIconComponent(iconName?: string) {
 }
 
 function getProgressColor(progress: number) {
-  if (progress >= 100) return 'from-emerald-500 to-green-500'
-  if (progress >= 75) return 'from-indigo-500 to-purple-500'
-  if (progress >= 50) return 'from-cyan-500 to-blue-500'
-  if (progress >= 25) return 'from-amber-500 to-orange-500'
+  if (progress >= 100) return 'from-sky-500 to-indigo-500'
+  if (progress >= 75) return 'from-indigo-500 to-cyan-500'
+  if (progress >= 50) return 'from-cyan-500 to-sky-500'
+  if (progress >= 25) return 'from-slate-500 to-sky-500'
   return 'from-slate-400 to-slate-500'
 }
 </script>
@@ -42,11 +42,11 @@ export default {
 </script>
 
 <template>
-  <section class="rounded-3xl border border-slate-200/85 bg-white/90 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0C0F17]/90">
+  <section class="rounded-3xl border border-slate-200/85 bg-white/90 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#0F1420]/92">
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white/90 text-indigo-600 dark:border-white/10 dark:bg-white/10 dark:text-indigo-300">
-          📋
+          <ListTodo class="h-5 w-5" />
         </div>
         <div>
           <h2 class="text-xl font-black text-slate-900 dark:text-white">执行任务</h2>
@@ -62,10 +62,10 @@ export default {
       <article
         v-for="task in tasks"
         :key="task.id"
-        class="group relative rounded-2xl border-2 p-4 transition-all duration-200 cursor-pointer"
-        :class="selectedTaskId === task.id 
-          ? 'border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:shadow-none' 
-          : 'border-slate-200/80 bg-white/80 hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-[#0C0F17]/80 dark:hover:border-indigo-500/30'"
+        class="group relative cursor-pointer rounded-2xl border p-4 transition-all duration-200"
+        :class="selectedTaskId === task.id
+          ? 'border-indigo-300 bg-sky-50/84 shadow-[0_14px_30px_rgba(79,70,229,0.12)] dark:border-indigo-400/40 dark:bg-indigo-500/14 dark:shadow-none'
+          : 'border-slate-200/80 bg-white/84 hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-[#111827]/78 dark:hover:border-indigo-500/30'"
         @click="emit('select-task', task.id)"
       >
         <div class="flex items-start gap-4">
@@ -94,8 +94,8 @@ export default {
               />
               <defs>
                 <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" :class="task.progress >= 75 ? 'stop-color-emerald-500' : task.progress >= 50 ? 'stop-color-indigo-500' : task.progress >= 25 ? 'stop-color-amber-500' : 'stop-color-slate-400'" />
-                  <stop offset="100%" :class="task.progress >= 75 ? 'stop-color-green-500' : task.progress >= 50 ? 'stop-color-purple-500' : task.progress >= 25 ? 'stop-color-orange-500' : 'stop-color-slate-500'" />
+                  <stop offset="0%" :class="task.progress >= 75 ? 'stop-color-indigo-500' : task.progress >= 50 ? 'stop-color-cyan-500' : task.progress >= 25 ? 'stop-color-slate-500' : 'stop-color-slate-400'" />
+                  <stop offset="100%" :class="task.progress >= 75 ? 'stop-color-cyan-500' : task.progress >= 50 ? 'stop-color-sky-500' : task.progress >= 25 ? 'stop-color-sky-500' : 'stop-color-slate-500'" />
                 </linearGradient>
               </defs>
             </svg>
@@ -104,10 +104,10 @@ export default {
           <!-- 中间：内容 -->
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span 
+              <span
                 class="rounded-full px-2 py-0.5 text-[10px] font-bold"
-                :class="task.status === 'completed' 
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' 
+                :class="task.status === 'completed'
+                  ? 'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300'
                   : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'"
               >
                 {{ task.task_type_label }}
@@ -135,7 +135,7 @@ export default {
               <div class="flex items-center gap-3">
                 <span 
                   class="flex items-center gap-1"
-                  :class="task.status === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'"
+                  :class="task.status === 'completed' ? 'text-sky-600 dark:text-sky-400' : 'text-slate-500 dark:text-slate-400'"
                 >
                   <component 
                     :is="task.status === 'completed' ? CheckCircle2 : Clock" 
@@ -153,7 +153,7 @@ export default {
             <button
               v-if="task.status !== 'completed'"
               @click.stop="emit('add-progress', task.id)"
-              class="flex items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-amber-300 hover:text-amber-600 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-amber-500/30"
+              class="flex items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-indigo-500/30"
             >
               <Zap class="h-3 w-3" />
               +25%
@@ -161,14 +161,14 @@ export default {
             <button
               v-if="task.status !== 'completed'"
               @click.stop="emit('complete-task', task.id)"
-              class="flex items-center justify-center gap-1 rounded-xl border border-indigo-300 bg-[linear-gradient(135deg,rgba(224,242,254,0.74)_0%,rgba(238,242,255,0.8)_55%,rgba(252,231,243,0.72)_100%)] px-3 py-2 text-xs font-semibold text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] transition-all hover:shadow-[0_16px_34px_rgba(79,70,229,0.16)] dark:border-indigo-400/40 dark:bg-[linear-gradient(135deg,rgba(30,58,138,0.42)_0%,rgba(67,56,202,0.34)_55%,rgba(131,24,67,0.28)_100%)] dark:text-white"
+              class="flex items-center justify-center gap-1 rounded-xl border border-indigo-300 bg-sky-50 px-3 py-2 text-xs font-semibold text-indigo-900 shadow-[0_14px_30px_rgba(79,70,229,0.12)] transition-all hover:shadow-[0_16px_34px_rgba(79,70,229,0.16)] dark:border-indigo-400/40 dark:bg-indigo-500/14 dark:text-white"
             >
               <CheckCircle2 class="h-3 w-3" />
               完成
             </button>
             <div 
               v-else
-              class="flex h-[42px] items-center justify-center rounded-xl bg-emerald-100 px-3 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
+              class="flex h-[42px] items-center justify-center rounded-xl bg-sky-100 px-3 text-xs font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300"
             >
               ✓ 已完成
             </div>

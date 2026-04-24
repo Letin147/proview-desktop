@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { ResumeAnalyzeResponse, ResumeReportContext, ResumeSection } from '../types/resume'
 import { fetchSSE, type SSECallbacks } from './sse'
 import { buildApiUrl, getRuntimeApiBaseUrl } from './runtimeConfig'
+import { assertValidResumeFile } from '../utils/resumeFile'
 
 // 独立的 axios 实例（resume 模块有自己的 token）
 const resumeApi = axios.create({
@@ -30,6 +31,7 @@ resumeApi.interceptors.request.use((config) => {
 })
 
 export async function analyzeResume(file: File, jobTitle: string, reportContext?: ResumeReportContext | null): Promise<ResumeAnalyzeResponse> {
+  assertValidResumeFile(file)
   const formData = new FormData()
   formData.append('resume', file)
   if (jobTitle) formData.append('job_title', jobTitle)
@@ -50,6 +52,7 @@ export async function analyzeResumeWithOcr(ocrText: string, jobTitle: string, re
 
 /** 流式分析简历（上传文件） */
 export async function analyzeResumeStream(file: File, jobTitle: string, callbacks: SSECallbacks, reportContext?: ResumeReportContext | null): Promise<void> {
+  assertValidResumeFile(file)
   const formData = new FormData()
   formData.append('resume', file)
   if (jobTitle) formData.append('job_title', jobTitle)

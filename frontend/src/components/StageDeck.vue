@@ -152,6 +152,12 @@ function nextCard() {
 <style scoped>
 .stage-deck {
   position: relative;
+  --deck-card-border: var(--ui-border-default);
+  --deck-card-border-strong: var(--ui-border-strong);
+  --deck-card-surface: linear-gradient(180deg, var(--ui-surface-raised) 0%, var(--ui-surface-1) 100%);
+  --deck-card-shadow: var(--ui-shadow-md);
+  --deck-card-shadow-strong: var(--ui-shadow-lg);
+  --deck-card-glow: var(--ui-accent-soft);
 }
 
 .stage-deck__viewport {
@@ -164,7 +170,7 @@ function nextCard() {
   align-items: center;
   justify-content: center;
   min-height: calc(var(--deck-card-height) + 40px);
-  perspective: 1200px;
+  perspective: 1400px;
 }
 
 .stage-deck__viewport--grid {
@@ -174,6 +180,7 @@ function nextCard() {
 }
 
 .stage-deck__card-wrap {
+  outline: none;
   transition:
     transform 320ms cubic-bezier(0.4, 0, 0.2, 1),
     opacity 320ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -205,27 +212,29 @@ function nextCard() {
 
 .stage-deck__card-wrap--prev {
   z-index: 20;
-  opacity: 0.5;
-  transform: translate3d(calc(var(--deck-card-width) * -0.6), 0, -20px) scale(0.85);
+  opacity: 0.62;
+  filter: saturate(0.85);
+  transform: translate3d(calc(var(--deck-card-width) * -0.56), 0, -22px) scale(0.88);
 }
 
 .stage-deck__card-wrap--next {
   z-index: 20;
-  opacity: 0.5;
-  transform: translate3d(calc(var(--deck-card-width) * 0.6), 0, -20px) scale(0.85);
+  opacity: 0.62;
+  filter: saturate(0.85);
+  transform: translate3d(calc(var(--deck-card-width) * 0.56), 0, -22px) scale(0.88);
 }
 
 .stage-deck__card-wrap--hidden-left {
   z-index: 10;
   opacity: 0;
-  transform: translate3d(calc(var(--deck-card-width) * -1), 0, -48px) scale(0.7);
+  transform: translate3d(calc(var(--deck-card-width) * -0.94), 0, -48px) scale(0.76);
   pointer-events: none;
 }
 
 .stage-deck__card-wrap--hidden-right {
   z-index: 10;
   opacity: 0;
-  transform: translate3d(calc(var(--deck-card-width) * 1), 0, -48px) scale(0.7);
+  transform: translate3d(calc(var(--deck-card-width) * 0.94), 0, -48px) scale(0.76);
   pointer-events: none;
 }
 
@@ -235,16 +244,15 @@ function nextCard() {
 }
 
 .stage-deck__card {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   min-height: 100%;
   padding: 1rem;
   border-radius: var(--deck-card-radius);
-  border: 1px solid rgba(226, 232, 240, 0.88);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.94) 100%);
-  box-shadow:
-    0 24px 48px rgba(15, 23, 42, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--deck-card-border);
+  background: var(--deck-card-surface);
+  box-shadow: var(--deck-card-shadow);
   text-align: left;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -255,16 +263,32 @@ function nextCard() {
     background-color 220ms ease;
 }
 
+.stage-deck__card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 18%, var(--deck-card-glow), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 26%);
+  opacity: 0.75;
+}
+
 .stage-deck__card-wrap:hover .stage-deck__card,
 .stage-deck__card--active {
-  border-color: rgba(129, 140, 248, 0.4);
-  box-shadow:
-    0 26px 56px rgba(79, 70, 229, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  border-color: var(--deck-card-border-strong);
+  box-shadow: var(--deck-card-shadow-strong);
 }
 
 .stage-deck__card-wrap:hover .stage-deck__card {
   transform: translateY(-2px);
+}
+
+.stage-deck__card-wrap:focus-visible .stage-deck__card {
+  border-color: var(--ui-accent);
+  box-shadow:
+    var(--deck-card-shadow),
+    0 0 0 4px var(--ui-focus-ring);
 }
 
 .stage-deck__card--expanded {
@@ -280,26 +304,35 @@ function nextCard() {
   justify-content: center;
   width: 3rem;
   height: 3rem;
-  border: 1px solid rgba(226, 232, 240, 0.92);
+  border: 1px solid var(--ui-border-default);
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.86);
-  color: #475569;
+  background: var(--ui-surface-floating);
+  color: var(--ui-text-secondary);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--ui-shadow-sm);
   transform: translateY(-50%);
   transition:
     transform 180ms ease,
     border-color 180ms ease,
     color 180ms ease,
-    background-color 180ms ease;
+    background-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .stage-deck__nav:hover {
   transform: translateY(-50%) scale(1.03);
-  border-color: rgba(129, 140, 248, 0.44);
-  color: #4338ca;
-  background: rgba(255, 255, 255, 0.96);
+  border-color: var(--ui-border-strong);
+  color: var(--ui-accent-strong);
+  background: var(--ui-surface-raised);
+  box-shadow: var(--ui-shadow-md);
+}
+
+.stage-deck__nav:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--ui-shadow-sm),
+    0 0 0 4px var(--ui-focus-ring);
 }
 
 .stage-deck__nav--left {
@@ -315,36 +348,7 @@ function nextCard() {
   align-items: center;
   justify-content: center;
   min-height: calc(var(--deck-card-height) - 2rem);
-  color: #0f172a;
-}
-
-:global(html.dark) .stage-deck__card {
-  border-color: rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(11, 14, 24, 0.94) 0%, rgba(8, 11, 19, 0.96) 100%);
-  box-shadow:
-    0 24px 48px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-:global(html.dark) .stage-deck__card-wrap:hover .stage-deck__card,
-:global(html.dark) .stage-deck__card--active {
-  border-color: rgba(129, 140, 248, 0.3);
-  box-shadow:
-    0 24px 52px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(129, 140, 248, 0.18);
-}
-
-:global(html.dark) .stage-deck__nav {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.82);
-  color: #cbd5e1;
-}
-
-:global(html.dark) .stage-deck__nav:hover {
-  border-color: rgba(129, 140, 248, 0.28);
-  color: #c4b5fd;
-  background: rgba(30, 41, 59, 0.92);
+  color: var(--ui-text-primary);
 }
 
 @media (max-width: 768px) {
@@ -354,11 +358,11 @@ function nextCard() {
   }
 
   .stage-deck__card-wrap--prev {
-    transform: translate3d(calc(var(--deck-card-width) * -0.45), 0, -20px) scale(0.85);
+    transform: translate3d(calc(var(--deck-card-width) * -0.42), 0, -20px) scale(0.86);
   }
 
   .stage-deck__card-wrap--next {
-    transform: translate3d(calc(var(--deck-card-width) * 0.45), 0, -20px) scale(0.85);
+    transform: translate3d(calc(var(--deck-card-width) * 0.42), 0, -20px) scale(0.86);
   }
 
   .stage-deck__nav {

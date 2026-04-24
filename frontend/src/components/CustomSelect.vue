@@ -33,6 +33,10 @@ function selectOption(value: number | string) {
   isOpen.value = false
 }
 
+function closeDropdown() {
+  isOpen.value = false
+}
+
 function toggleDropdown() {
   isOpen.value = !isOpen.value
 }
@@ -54,21 +58,28 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="selectRef" class="custom-select-wrapper" :class="{ 'custom-select-wrapper--open': isOpen }">
+  <div
+    ref="selectRef"
+    class="custom-select-wrapper"
+    :class="{ 'custom-select-wrapper--open': isOpen }"
+    @keydown.esc.stop="closeDropdown"
+  >
     <button
       type="button"
       @click="toggleDropdown"
       class="custom-select-trigger"
       :class="{ 'custom-select-open': isOpen }"
+      :aria-expanded="isOpen"
+      aria-haspopup="listbox"
     >
-      <span class="custom-select-value">
+      <span class="custom-select-value" :class="{ 'custom-select-value--placeholder': !selectedOption }">
         {{ selectedOption?.label || placeholder }}
       </span>
       <ChevronDown class="custom-select-icon" :class="{ 'rotate-180': isOpen }" />
     </button>
 
     <Transition name="dropdown">
-      <div v-if="isOpen" class="custom-select-dropdown">
+      <div v-if="isOpen" class="custom-select-dropdown custom-scroll" role="listbox">
         <button
           v-for="option in options"
           :key="option.value"
@@ -98,88 +109,67 @@ onUnmounted(() => {
 }
 
 .custom-select-trigger {
-  @apply w-full px-4 py-3 rounded-xl border outline-none transition-all flex items-center justify-between;
-  background: transparent;
-  border-color: rgb(203, 213, 225);
-  color: rgb(15, 23, 42);
-}
-
-.dark .custom-select-trigger {
-  background: #0F0F15;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.95);
+  @apply flex w-full items-center justify-between gap-3 px-4 py-3 text-left outline-none transition-all;
+  border-radius: var(--ui-radius-sm);
+  border: 1px solid var(--ui-border-default);
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-primary);
+  box-shadow: var(--ui-shadow-sm);
 }
 
 .custom-select-trigger:hover {
-  border-color: rgb(148, 163, 184);
-}
-
-.dark .custom-select-trigger:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--ui-border-strong);
+  background: var(--ui-surface-1);
 }
 
 .custom-select-open {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  border-color: var(--ui-accent) !important;
+  box-shadow:
+    var(--ui-shadow-sm),
+    0 0 0 4px var(--ui-focus-ring);
 }
 
 .custom-select-value {
-  @apply text-sm flex-1 text-left;
+  @apply flex-1 text-left text-sm font-medium;
+  color: var(--ui-text-primary);
+}
+
+.custom-select-value--placeholder {
+  color: var(--ui-text-muted);
 }
 
 .custom-select-icon {
-  @apply w-4 h-4 transition-transform;
-  color: rgb(148, 163, 184);
-}
-
-.dark .custom-select-icon {
-  color: rgba(255, 255, 255, 0.4);
+  @apply h-4 w-4 shrink-0 transition-transform;
+  color: var(--ui-text-muted);
 }
 
 .custom-select-dropdown {
-  @apply absolute left-0 right-0 mt-2 rounded-xl border overflow-hidden z-50;
+  @apply absolute left-0 right-0 z-50 mt-2 overflow-hidden;
   max-height: 240px;
   overflow-y: auto;
-  background: white;
-  border-color: rgb(226, 232, 240);
-  box-shadow:
-    0 24px 48px -18px rgba(15, 23, 42, 0.3),
-    0 10px 18px -8px rgba(15, 23, 42, 0.14);
-}
-
-.dark .custom-select-dropdown {
-  /* 暗黑模式：使用悬浮层级颜色 */
-  background: #1E1E2E;
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 24px 48px -18px rgba(0, 0, 0, 0.55),
-    0 12px 20px -10px rgba(0, 0, 0, 0.4);
+  padding: 0.4rem;
+  border-radius: calc(var(--ui-radius-sm) + 0.125rem);
+  border: 1px solid var(--ui-border-default);
+  background: var(--ui-surface-raised);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: var(--ui-shadow-lg);
 }
 
 .custom-select-option {
-  @apply w-full px-4 py-2.5 text-left text-sm transition-colors flex items-center justify-between;
-  color: rgb(15, 23, 42);
-}
-
-.dark .custom-select-option {
-  color: rgba(255, 255, 255, 0.95);
+  @apply flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition-colors;
+  border-radius: calc(var(--ui-radius-sm) - 0.1rem);
+  color: var(--ui-text-primary);
 }
 
 .custom-select-option:hover {
-  background: rgb(248, 250, 252);
-}
-
-.dark .custom-select-option:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--ui-surface-3);
 }
 
 .custom-select-option-selected {
-  color: var(--color-primary);
-  font-weight: 500;
-}
-
-.dark .custom-select-option-selected {
-  color: var(--color-primary);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
+  font-weight: 600;
 }
 
 /* 下拉动画 */
@@ -196,23 +186,5 @@ onUnmounted(() => {
 .dropdown-leave-to {
   opacity: 0;
   transform: translateY(-4px);
-}
-
-/* 自定义滚动条 */
-.custom-select-dropdown::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-select-dropdown::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-select-dropdown::-webkit-scrollbar-thumb {
-  background: rgb(203, 213, 225);
-  border-radius: 10px;
-}
-
-.dark .custom-select-dropdown::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
 }
 </style>

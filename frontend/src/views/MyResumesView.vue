@@ -48,6 +48,8 @@ async function loadResumes() {
 
 onMounted(loadResumes)
 
+const previewableCount = computed(() => resumes.value.filter(record => record.can_preview !== false).length)
+
 const previewImages = computed(() => {
   const resume = previewResume.value
   if (!resume || resume.can_preview === false) return []
@@ -218,26 +220,36 @@ async function handleDelete(record: ResumeRecord) {
 
 <template>
   <div class="mx-auto min-h-full max-w-6xl fade-in">
-    <div class="mb-6">
-      <h2 class="flex items-center gap-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-        <FileUser class="h-7 w-7 text-primary" />
-        我的简历
-      </h2>
-      <p class="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-        这里会保留每份简历的预览图，同时展示当前应用中的本地简历路径。
-      </p>
-    </div>
+    <section class="resume-library-hero ui-card mb-6 p-6">
+      <div class="resume-library-hero__copy">
+        <span class="ui-section-badge">简历资产</span>
+        <h2 class="ui-page-title mt-4 text-3xl">我的简历</h2>
+        <p class="ui-page-subtitle mt-2 text-sm font-medium">
+          这里会保留每份简历的预览图、上传时间和本地路径，方便你后续复用、定位和下载。
+        </p>
+      </div>
+      <div class="resume-library-hero__stats">
+        <div class="resume-library-stat">
+          <span class="resume-library-stat__label">总数量</span>
+          <strong class="resume-library-stat__value">{{ resumes.length }}</strong>
+        </div>
+        <div class="resume-library-stat">
+          <span class="resume-library-stat__label">可预览</span>
+          <strong class="resume-library-stat__value">{{ previewableCount }}</strong>
+        </div>
+      </div>
+    </section>
 
-    <div class="mb-5 rounded-2xl border border-sky-200 bg-sky-50/80 px-4 py-3 text-sm text-sky-800 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200">
+    <div class="resume-library-note ui-card-soft mb-5">
       桌面版支持直接定位文件和打开文件；Web 调试环境会保留完整路径展示，并支持复制路径。
     </div>
 
-    <div v-if="loading" class="flex items-center justify-center py-20">
+    <div v-if="loading" class="ui-empty-state flex items-center justify-center gap-3 py-20">
       <Loader class="h-6 w-6 animate-spin text-primary" />
-      <span class="ml-2 text-slate-500 dark:text-slate-400">正在加载简历库...</span>
+      <span class="text-sm text-slate-500 dark:text-slate-400">正在加载简历库...</span>
     </div>
 
-    <div v-else-if="!resumes.length" class="py-20 text-center">
+    <div v-else-if="!resumes.length" class="ui-empty-state py-20 text-center">
       <FileUser class="mx-auto mb-4 h-16 w-16 text-slate-300 dark:text-slate-600" />
       <p class="text-slate-500 dark:text-slate-400">暂无简历记录</p>
       <p class="mt-1 text-sm text-slate-400 dark:text-slate-500">
@@ -249,7 +261,7 @@ async function handleDelete(record: ResumeRecord) {
       <article
         v-for="record in resumes"
         :key="record.id"
-        class="resume-item"
+        class="resume-item ui-card ui-card-interactive"
       >
         <div class="flex flex-col gap-5 xl:flex-row">
           <button
@@ -466,22 +478,71 @@ async function handleDelete(record: ResumeRecord) {
 @reference "tailwindcss";
 
 .resume-item {
-  @apply rounded-[28px] border p-5 transition-all sm:p-6;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.94) 100%);
-  border-color: rgba(226, 232, 240, 0.92);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+  padding: 1.25rem;
 }
 
-.resume-item:hover {
-  border-color: rgba(79, 70, 229, 0.28);
-  box-shadow: 0 18px 42px rgba(79, 70, 229, 0.1);
+.resume-library-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.dark .resume-item {
+.resume-library-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background:
-    linear-gradient(180deg, rgba(16, 19, 29, 0.94) 0%, rgba(10, 12, 20, 0.96) 100%);
-  border-color: rgba(255, 255, 255, 0.08);
+    radial-gradient(circle at 12% 20%, rgba(59, 130, 246, 0.12), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(99, 102, 241, 0.1), transparent 24%);
+  pointer-events: none;
+}
+
+.resume-library-hero__copy,
+.resume-library-hero__stats {
+  position: relative;
+  z-index: 1;
+}
+
+.resume-library-hero__stats {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.resume-library-stat {
+  display: flex;
+  min-width: 118px;
+  flex-direction: column;
+  gap: 0.3rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--ui-border-subtle);
+  background: var(--ui-surface-raised);
+  padding: 0.95rem 1rem;
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.resume-library-stat__label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+
+.resume-library-stat__value {
+  font-size: 1.4rem;
+  line-height: 1;
+  font-weight: 900;
+  color: var(--ui-text-primary);
+}
+
+.resume-library-note {
+  padding: 0.95rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ui-info);
 }
 
 .resume-thumb {
@@ -521,13 +582,8 @@ async function handleDelete(record: ResumeRecord) {
 
 .meta-badge {
   @apply inline-flex items-center rounded-full px-2.5 py-1 font-medium;
-  background: rgb(241, 245, 249);
-  color: rgb(71, 85, 105);
-}
-
-.dark .meta-badge {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgb(148, 163, 184);
+  background: var(--ui-surface-3);
+  color: var(--ui-text-secondary);
 }
 
 .path-panel {
@@ -560,35 +616,32 @@ async function handleDelete(record: ResumeRecord) {
 
 .action-btn {
   @apply inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors;
-  border-color: rgb(226, 232, 240);
-  color: rgb(71, 85, 105);
-  background: white;
+  border-color: var(--ui-border-default);
+  color: var(--ui-text-secondary);
+  background: var(--ui-surface-raised);
 }
 
 .action-btn:hover {
-  border-color: rgba(79, 70, 229, 0.45);
-  color: rgb(79, 70, 229);
-}
-
-.dark .action-btn {
-  border-color: rgba(255, 255, 255, 0.08);
-  color: rgb(203, 213, 225);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--ui-border-strong);
+  color: var(--ui-accent-strong);
+  background: var(--ui-surface-1);
 }
 
 .action-primary {
   border-color: rgba(79, 70, 229, 0.22);
-  color: rgb(79, 70, 229);
-  background: rgba(79, 70, 229, 0.08);
+  color: var(--ui-accent-strong);
+  background: var(--ui-accent-soft);
 }
 
 .action-danger {
-  color: rgb(220, 38, 38);
+  color: var(--ui-danger);
+  background: var(--ui-danger-soft);
 }
 
 .action-danger:hover {
   border-color: rgba(220, 38, 38, 0.35);
-  color: rgb(185, 28, 28);
+  color: var(--ui-danger);
+  background: rgba(244, 63, 94, 0.16);
 }
 
 .preview-shell {
@@ -738,5 +791,17 @@ async function handleDelete(record: ResumeRecord) {
 .dark .icon-btn {
   border-color: rgba(255, 255, 255, 0.08);
   color: rgb(203, 213, 225);
+}
+
+@media (max-width: 880px) {
+  .resume-library-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .resume-library-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

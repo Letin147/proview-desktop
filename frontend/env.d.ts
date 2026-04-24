@@ -10,6 +10,8 @@ interface ProviewDesktopBridge {
   isDesktop: boolean
   locateFile?: (filePath: string) => Promise<ProviewDesktopActionResult>
   openFile?: (filePath: string) => Promise<ProviewDesktopActionResult>
+  getZoomFactor?: () => number
+  setZoomFactor?: (factor: number) => number
 }
 
 interface Window {
